@@ -34,3 +34,9 @@ A keyboard-only browser game, written in ***plain and regenerated with turri. Th
 
 - `main` holds the specs only - `*.plain`, `template/`, `resources/`, `test_scripts/`, `config.turri.yaml`, `README.md`, `AGENTS.md`. Generated output is gitignored.
 - Commit and push only when the person asks; they often want to try a change before it is committed.
+- Commit messages follow [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/): `<type>[optional scope]: <description>`, with an optional body and footers.
+  - Types: `feat` for a new behaviour, `fix` for a bug, `docs` for README.md or AGENTS.md, `style`, `refactor`, `test`, `build`, `ci`, `chore`.
+  - The scope is the module the change is in - `feat(predators): slower sting ring`, `fix(animation): readable pause menu`.
+  - The description is imperative and lower case, with no full stop.
+  - A breaking change - one that changes a saved scoreboard, a URL or the state snapshot - adds `!` after the type or scope and a `BREAKING CHANGE:` footer.
+  - The `gh-pages` publish commit is `chore(pages): publish <what changed>`.
