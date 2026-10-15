@@ -40,7 +40,7 @@ description: Animation - the figures of the deep move, and every event of a run 
   - The figure pulses about its centre; the :Jellyfish: circle stays radius 24.
 
 - The :Jellyfish: has 4 wavy tentacles in the palette's player tentacles colour, hanging from the lower rim of its bell, each moving on its own.
-  - From left to right they are 48, 56, 52 and 46 px long, sway once every 1.3, 1.7, 1.5 and 1.9 s, and start 0, 0.4, 0.7 and 0.2 of a cycle into their sway.
+  - From left to right they are 58, 66, 62 and 56 px long, sway once every 1.3, 1.7, 1.5 and 1.9 s, and start 0, 0.4, 0.7 and 0.2 of a cycle into their sway.
   - Each sway is a wave running from the rim to the tip: 0 px across at the rim, growing to 5, 6, 4 and 7 px at the tip, the tip half a cycle behind the rim.
   - Each contraction of the bell's pulse draws every tip up to 4 px in towards the bell's centre line, and they spread back as the bell relaxes.
   - A tentacle is a smooth curve through at least 8 points, tapering from 3 px wide at the rim to 1 px at the tip.
