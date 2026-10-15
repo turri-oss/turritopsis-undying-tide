@@ -125,7 +125,11 @@ description: Animation - the figures of the deep move, and every event of a run 
   - No :GeneFragment: is placed under :Hud: or the control legend: every :GeneFragment: circle lies wholly outside the rectangles from `(0, 0)` to `(240, 260)` and from `(0, 580)` to `(260, 720)`, besides keeping its other placement rules.
 
 - Every page - :TitleScreen:, :DivePage: and the scoreboard page at `/scoreboard` - fills the browser window exactly, with no page margin and no scrollbar, in any window of at least 1024×600.
-  - :DivePage: keeps its play area letterboxed inside the window.
+  - :DivePage: draws its canvas over the whole window; the 1280×720 :Level: is scaled to fit inside it and centred, as before, and the ocean continues into the bands around it.
+    - The bands show the water gradient of the :Level:'s :Depth: band, running from the top of the window to its bottom, under the palette's darkness overlay wherever they lie outside the :Glow:, as the :Level: does.
+    - While a :Level: is dived into, the bands take the same darkness overlay fading from fully opaque to clear, unshifted.
+    - The bands are only drawn: the :Jellyfish: and every figure stay inside the :Level:, and :Hud: and the control legend keep their places in the :Level:.
+    - No part of the window shows a plain black page background.
   - The scoreboard page with 10 rows, the :RunEnd: reason lines above them and its buttons fits in the window without scrolling, shrinking its table text if it must.
 
 - :TitleScreen: shows a footer at the bottom of the page, `Powered by ***plain and turri · Source`, where `***plain` links to `https://plainlang.org/docs/`, `turri` to `https://github.com/turri-oss/turri`, and `Source` to `https://github.com/turri-oss/turritopsis-undying-tide`.
