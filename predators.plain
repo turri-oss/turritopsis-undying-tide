@@ -60,6 +60,7 @@ description: Predators - the Drift-corrupted predators, hearts, the sting, the d
 - Space fires the :Sting:, which costs 3 :Pulses: and purifies every :Predator: whose circle it reaches; a purified :Predator: leaves the :Level:.
   - The :Sting: reaches a :Predator: when the distance between their centres is at most `90 + ` the :Predator: radius.
   - After a :Sting:, Space does nothing for 1 s; holding Space does not fire again.
+  - Each press of Space fires at most one :Sting:, on the update right after it or not at all; a press that cannot fire then is dropped, never kept for later.
   - Space does nothing while :Pulses: is 3 or less.
   - A :Sting: is drawn as a ring in the palette's sting colour, widening to 90 px over 1 s and fading out over its last 0.2 s; the ring is only drawn, and the :Sting: still purifies at the moment it is fired.
   - Space does nothing while the :Run: is paused or after the :RunEnd:.
