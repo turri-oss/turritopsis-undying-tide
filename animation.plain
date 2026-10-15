@@ -34,9 +34,9 @@ description: Animation - the figures of the deep move, and every event of a run 
 
 ***functional specs***
 
-- The :Jellyfish: figure pulses: its bell narrows to 90% of its width and lengthens to 110% of its height, then relaxes back to its drawn size, once every 1.2 s, and once every 0.5 s while a direction key is held.
+- The :Jellyfish: figure pulses: its bell narrows to 90% of its width and lengthens to 110% of its height, then relaxes back to its drawn size, once every 1.2 s, and once every 0.8 s while a direction key is held.
   - Opposite direction keys held together count as no direction held.
-  - Changing between the two rates keeps the pulse where it stood in its cycle, without a jump.
+  - While a direction key is held, each contraction starts with a stroke of the :Jellyfish:; a stroke that starts mid-pulse takes the bell into its contraction from where it stands, without a jump.
   - The figure pulses about its centre; the :Jellyfish: circle stays radius 24.
 
 - The :Jellyfish: has 4 wavy tentacles in the palette's player tentacles colour, hanging from the lower rim of its bell, each moving on its own.

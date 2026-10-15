@@ -58,7 +58,7 @@ description: Predators - the Drift-corrupted predators, hearts, the sting and th
   - Shift does nothing when no direction key is held and the :Jellyfish: is at rest.
   - A :Dash: costs no :Pulses:, which run down at the swimming rate of 1 a second while it lasts.
   - Shift does nothing for 2 s after a :Dash: starts; holding Shift does not dash again.
-  - A :Dash: ends early at an edge of the :Level:, and the :Jellyfish: leaves it at its top speed of 240 px/s.
+  - A :Dash: ends early at an edge of the :Level:, and the :Jellyfish: leaves it at its top speed of 280 px/s.
   - A :Dash: does not lengthen nor shorten an :Invulnerability: that was already running.
   - The :Jellyfish: does not blink for the :Invulnerability: of a :Dash:; it blinks during a :Dash: only while the :Invulnerability: that follows a hit is running.
   - :Hud: shows the :Dash: as ready, or as a filling ring while it waits.

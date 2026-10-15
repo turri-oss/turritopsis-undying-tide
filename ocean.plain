@@ -12,8 +12,10 @@ description: The ocean - the play area, the game loop, the jellyfish swimming, a
   - :DivePage: opened directly also starts a new :Run:.
 
 - The :Jellyfish: swims while a direction key is held: the arrow keys, or W, A, S and D.
-  - Holding a direction accelerates it at 900 px/s² in that direction, up to a top speed of 240 px/s; two keys at once swim diagonally at the same top speed.
-  - With no direction held it glides on, slowing down until it stops within 0.5 s.
+  - It swims in strokes, one every 0.8 s while a direction is held, the first the moment a direction is first held after none was.
+  - Each stroke thrusts for 0.3 s, accelerating it at 700 px/s² in the held direction up to a top speed of 280 px/s; for the other 0.5 s it glides, slowing by 200 px/s².
+  - Two keys at once swim diagonally, with the same strokes and top speed.
+  - With no direction held it glides on, slowing down until it stops within 1 s.
   - Holding opposite directions together counts as holding neither of them.
   - Its centre stays at least 24 px inside each edge of the :Level:; at an edge, its speed into that edge drops to zero.
   - A key held while the page does not have the focus is released when the page loses it.
