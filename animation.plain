@@ -27,6 +27,11 @@ description: Animation - the figures of the deep move, and every event of a run 
 
 - :Implementation: sets every colour of `src/game/palette.ts` that the pages use as a CSS custom property on the document root once at startup, so every page and overlay, :PauseMenu: and :RegenerationScreen: included, reads the same variables.
 
+- :Implementation: runs served from any base path, such as `/turritopsis-undying-tide/` on GitHub Pages.
+  - Vite's `base` is read from the `BASE_PATH` environment variable at build time, `/` when it is unset.
+  - The router's `basename` is `import.meta.env.BASE_URL`, and every link, navigation and asset URL is relative to it.
+  - `npm run build` also writes `dist/404.html`, a copy of `dist/index.html`, so reloading `/dive` or `/scoreboard` under the base path opens the game.
+
 ***functional specs***
 
 - The :Jellyfish: figure pulses: its bell narrows to 90% of its width and lengthens to 110% of its height, then relaxes back to its drawn size, once every 1.2 s, and once every 0.5 s while a direction key is held.
@@ -117,3 +122,14 @@ description: Animation - the figures of the deep move, and every event of a run 
   - Like :Hud:, it is drawn above the darkness and unshifted while a :Level: is dived into.
   - It is only drawn: nothing in the :Level: collides with it.
   - No :GeneFragment: is placed under :Hud: or the control legend: every :GeneFragment: circle lies wholly outside the rectangles from `(0, 0)` to `(240, 260)` and from `(0, 580)` to `(260, 720)`, besides keeping its other placement rules.
+
+- Every page - :TitleScreen:, :DivePage: and the scoreboard page at `/scoreboard` - fills the browser window exactly, with no page margin and no scrollbar, in any window of at least 1024×600.
+  - :DivePage: keeps its play area letterboxed inside the window.
+  - The scoreboard page with 10 rows, the :RunEnd: reason lines above them and its buttons fits in the window without scrolling, shrinking its table text if it must.
+
+- :TitleScreen: shows a footer at the bottom of the page, `Powered by ***plain and turri · Source`, where `***plain` links to `https://plainlang.org/docs/`, `turri` to `https://github.com/turri-oss/turri`, and `Source` to `https://github.com/turri-oss/turritopsis-undying-tide`.
+  - Each link opens in a new tab, with `target="_blank"` and `rel="noopener"`.
+  - Tab reaches the links after the :TitleScreen: buttons; Arrow Up and Arrow Down still move the focus between the buttons only.
+  - The footer text is in the palette's HUD text-secondary colour, its links in the HUD text colour, underlined.
+  - `***plain` is shown as written, with its three asterisks.
+  - :TitleScreen: with the footer still fits in the window without scrolling.

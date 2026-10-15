@@ -46,9 +46,9 @@ description: Predators - the Drift-corrupted predators, hearts, the sting and th
 
 - Space fires the :Sting:, which costs 3 :Pulses: and purifies every :Predator: whose circle it reaches; a purified :Predator: leaves the :Level:.
   - The :Sting: reaches a :Predator: when the distance between their centres is at most `90 + ` the :Predator: radius.
-  - After a :Sting:, Space does nothing for 0.6 s; holding Space does not fire again.
+  - After a :Sting:, Space does nothing for 1 s; holding Space does not fire again.
   - Space does nothing while :Pulses: is 3 or less.
-  - A :Sting: is drawn as a ring in the palette's sting colour, widening to 90 px over 0.2 s.
+  - A :Sting: is drawn as a ring in the palette's sting colour, widening to 90 px over 1 s and fading out over its last 0.2 s; the ring is only drawn, and the :Sting: still purifies at the moment it is fired.
   - Space does nothing while the :Run: is paused or after the :RunEnd:.
   - :Hud: shows `Purified <n>`, the :Predator: items purified in the :Run: so far.
   - :StateSnapshot: adds `purified` (the count for the :Run:) and `stingCooldown` (seconds left, 0 when ready).
@@ -60,6 +60,7 @@ description: Predators - the Drift-corrupted predators, hearts, the sting and th
   - Shift does nothing for 2 s after a :Dash: starts; holding Shift does not dash again.
   - A :Dash: ends early at an edge of the :Level:, and the :Jellyfish: leaves it at its top speed of 240 px/s.
   - A :Dash: does not lengthen nor shorten an :Invulnerability: that was already running.
+  - The :Jellyfish: does not blink for the :Invulnerability: of a :Dash:; it blinks during a :Dash: only while the :Invulnerability: that follows a hit is running.
   - :Hud: shows the :Dash: as ready, or as a filling ring while it waits.
   - :StateSnapshot: adds `dashing` (boolean) and `dashCooldown` (seconds left, 0 when ready).
 

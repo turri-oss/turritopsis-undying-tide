@@ -2,7 +2,7 @@
 
 A keyboard-only browser game: the immortal jellyfish dives through endless, ever darker ocean depths, collecting gene fragments, dodging Drift-corrupted predators, and regenerating as a polyp when it loses its last heart - for the highest score on a local top-10 scoreboard.
 
-This repository holds the game's ***plain specs, not its code. The code (React 19 + TypeScript + Vite, drawn on one HTML5 canvas) is regenerated from them with [turri](https://github.com/turri-oss).
+This repository holds the game's ***plain specs, not its code. The code (React 19 + TypeScript + Vite, drawn on one HTML5 canvas) is regenerated from them with [turri](https://github.com/turri-oss/turri). Learn ***plain at [plainlang.org/docs](https://plainlang.org/docs/).
 
 ## Layout
 
