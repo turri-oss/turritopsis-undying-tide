@@ -109,6 +109,7 @@ description: Animation - the figures of the deep move, and every event of a run 
   - The :Jellyfish: does not pulse while it is a :Polyp:.
   - The polyp figure pulses while a :Polyp:, from the end of its growing until its shrinking starts: it swells to 112% of its full size and back once every 0.8 s, about the :Jellyfish: centre, inside a halo of radius 36 in the palette's player core colour whose opacity rises from 15% to 45% and falls back on the same cycle.
   - The :Polyp: circle stays radius 24 throughout.
+  - The polyp figure has no sharp corners: its stalk is a rounded column, its top end hidden under the bell and its foot a rounded base, and every outline of the figure is a smooth curve.
 
 - Every text of the game - on :TitleScreen:, :PauseMenu:, :RegenerationScreen:, the scoreboard page at `/scoreboard`, :DivePage: and in :Hud: - is set in Nunito, with `sans-serif` as the fallback.
   - Headings are weight 800, buttons and :Hud: labels 600, every other text 400.
