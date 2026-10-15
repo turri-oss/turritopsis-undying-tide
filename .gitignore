@@ -1,0 +1,7 @@
+# Generated from the ***plain specs - regenerate with turri
+plain_modules/
+dist/
+.turri/
+node_modules/
+.env
+.DS_Store

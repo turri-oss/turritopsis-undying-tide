@@ -1,0 +1,51 @@
+# Turritopsis Dohrnii: The Undying Tide - colour palette
+# Taken from the real jellyfish: a glassy bell, an orange-red core, cream tentacles, deep teal water.
+
+player:
+  core: "#E8552E"            # orange-red stomach, the focal point
+  core-highlight: "#F58A63"
+  bell: "#E6F2F3"            # drawn at 25-35% opacity
+  bell-opacity: [0.25, 0.35]
+  bell-rim: "#BFDDE2"
+  tentacles: "#E3E6D8"
+
+water:                       # vertical gradient, top to bottom of the screen
+  sunlit:                    # depths 1-2
+    depths: [1, 2]
+    top: "#2A6F84"
+    bottom: "#174A5C"
+  twilight:                  # depths 3-4
+    depths: [3, 4]
+    top: "#174A5C"
+    bottom: "#0E3242"
+  midnight:                  # depths 5-6
+    depths: [5, 6]
+    top: "#0E3242"
+    bottom: "#08202C"
+  abyss:                     # depth 7 and below
+    depths: [7, null]
+    top: "#08202C"
+    bottom: "#03111A"
+  darkness-overlay: "#020A10"  # blue-black, so the deep still reads as water
+
+glow:
+  gene-fragment: "#FFD166"
+  rift-closed: "#2E8C99"
+  rift-open: "#5FF2E8"
+  plankton: "#9BE39B"
+  sting: "#C9FBFF"
+
+predators:
+  body: "#8A9BA8"            # fish, worms
+  comb-jelly: "#B69CFF"
+  drift: "#B026FF"           # corruption: glitches, outlines
+  drift-flicker: "#FF3EA5"
+
+hud:
+  text: "#F2F5F3"
+  text-secondary: "#8FB3BC"
+  panel: "#0B2A36"           # drawn at 80% opacity
+  panel-opacity: 0.8
+  heart: "#E8552E"           # the same as the player's core
+  pulse-bar: "#5FD4E0"
+  danger: "#FF4D4D"          # low pulses, warnings

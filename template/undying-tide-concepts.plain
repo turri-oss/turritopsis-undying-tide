@@ -1,0 +1,52 @@
+---
+description: The concepts every Undying Tide module shares - the run, the level, the jellyfish and what lives in the deep.
+---
+
+***definitions***
+
+- :TitleScreen: is the page at `/`, the first thing a player sees.
+
+- :Level: is one depth of the ocean, the whole 1280×720 play area, seen at once on one screen.
+  - Its position is in logical pixels, `(0, 0)` at the top left.
+
+- :Jellyfish: is the player's Turritopsis, a circle of radius 24 in the :Level: for collisions, drawn as its own figure.
+
+- :Run: is one game, from the dive until it ends.
+
+- :DivePage: is the page at `/dive` on which a :Run: is played, holding the game canvas.
+
+- :RunSeed: is the integer that every random choice of a :Run: is drawn from.
+
+- :StateSnapshot: is a read-only JSON copy of the current state of the :Run:, read through `window.__undyingTide`.
+  - Changing a :StateSnapshot: changes nothing in the :Run:.
+
+- :PauseMenu: is the menu shown over the :Level: of :DivePage: while a :Run: is paused.
+
+- :Depth: is the number of the :Level: a :Run: is in, 1 for the first, one more for each :Level: below it.
+
+- :GeneFragment: is a glowing piece of the jellyfish's genes in a :Level:, a circle of radius 12.
+
+- :Hud: is the information drawn over the top of the :Level: during a :Run:, on a panel at the top left in the palette's HUD colours.
+
+- :Rift: is the way down from a :Level: to the next, a circle of radius 40, closed until it opens.
+
+- :Pulses: is the counter of the jellyfish's remaining strength in a :Level:, a number that runs down while it swims.
+
+- :RunEnd: is the moment a :Run: is lost: every position, timer and counter stands still, and no key changes the :Level: any more.
+
+- :PlanktonCloud: is a cloud of plankton in a :Level:, a circle of radius 30, that refills :Pulses:.
+
+- :Glow: is the circle of light around the :Jellyfish:; outside it the :Level: is dark.
+
+- :Predator: is a creature corrupted by the Drift that hunts the :Jellyfish: in a :Level:, drawn as the figure of its kind with a Drift outline.
+  - Every :Predator: is placed from the :RunSeed:, at least 250 px from `(640, 360)` and at least 40 px inside every edge, unless its kind says otherwise.
+
+- :PredatorPace: is `1 + 0.08 × (:Depth: - 1)`, the factor every :Predator: speed is multiplied by.
+
+- :Hearts: is the count of hits the :Jellyfish: can still take in a :Run:, 3 at the start of the :Run:.
+
+- :Invulnerability: is a span of time in which no :Predator: can take a heart from the :Jellyfish:.
+
+- :Sting: is the ring of stinging cells the :Jellyfish: fires around itself, reaching 90 px from its centre, which purifies a :Predator: it reaches.
+
+- :Dash: is a short burst of the :Jellyfish: at three times its top speed.

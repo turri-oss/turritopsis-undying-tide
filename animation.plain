@@ -1,0 +1,113 @@
+---
+import:
+  - undying-tide-base
+requires:
+  - predators
+  - regeneration
+description: Animation - the figures of the deep move, and every event of a run is seen as it happens.
+---
+
+***implementation reqs***
+
+- :Implementation: draws every animation of a :Run: in `src/game/render/`, timed by the simulation's `tick`, so animations stand still whenever `tick` does; no animation changes the simulation state, a collision circle or a timing.
+
+- The simulation keeps a list of the events animations are drawn for - a :GeneFragment: collected, a :PlanktonCloud: used, one of the :Hearts: lost, a :Predator: purified, a :Rift: opened, a :Level: started - each with its kind, position, the figure it concerns and its `tick`, and drops each one 1 s after it happened; the list is not part of :StateSnapshot:.
+
+- The twinkle of each :PlanktonCloud: speck is timed by a hash of the cloud's index, the speck's index and `tick`, never by the :RunSeed: generator.
+
+- The shimmer band of :CombJelly:, :FlickerJelly: and :SplitJelly: is drawn with the canvas `lighter` composite operation.
+
+- :Implementation: draws the :Jellyfish: tentacles as canvas strokes, so `src/game/art/jellyfish.svg` holds only its bell and core.
+
+- :Implementation: draws the moving background of :TitleScreen: and :RegenerationScreen: on a canvas behind the page content, timed by `requestAnimationFrame`, apart from the game loop.
+
+- :Implementation: bundles the Nunito font through the `@fontsource/nunito` npm package, weights 400, 600 and 800, imported once in `src/main.tsx`, never from a network font service.
+  - The canvas draws a :Run:'s first frame only after `document.fonts.load` of Nunito resolves.
+  - Every `ctx.font` names `Nunito` first, with `sans-serif` as the fallback.
+
+***functional specs***
+
+- The :Jellyfish: figure pulses: its bell narrows to 90% of its width and lengthens to 110% of its height, then relaxes back to its drawn size, once every 1.2 s, and once every 0.5 s while a direction key is held.
+  - Opposite direction keys held together count as no direction held.
+  - Changing between the two rates keeps the pulse where it stood in its cycle, without a jump.
+  - The figure pulses about its centre; the :Jellyfish: circle stays radius 24.
+
+- The :Jellyfish: has 4 wavy tentacles in the palette's player tentacles colour, hanging from the lower rim of its bell, each moving on its own.
+  - From left to right they are 38, 44, 42 and 36 px long, sway once every 1.3, 1.7, 1.5 and 1.9 s, and start 0, 0.4, 0.7 and 0.2 of a cycle into their sway.
+  - Each sway is a wave running from the rim to the tip: 0 px across at the rim, growing to 5, 6, 4 and 7 px at the tip, the tip half a cycle behind the rim.
+  - Each contraction of the bell's pulse draws every tip up to 4 px in towards the bell's centre line, and they spread back as the bell relaxes.
+  - A tentacle is a smooth curve through at least 8 points, tapering from 3 px wide at the rim to 1 px at the tip.
+  - Its bend follows a change of the :Jellyfish: velocity with a lag growing along it, reaching the tip 0.25 s after the rim, so the tips trail when it turns.
+  - At rest they hang straight down; while it moves they bend to stream out opposite its velocity, more the faster it moves, fully behind it at 240 px/s and above.
+  - They are drawn beneath the bell.
+
+- Every :CombJelly:, :FlickerJelly: and :SplitJelly: shimmers: a band of light a quarter of its diameter tall sweeps down its figure from top to bottom once every 0.8 s, clipped to its circle.
+  - The band is the palette's comb-jelly colour at 60% opacity, added to the figure's colours so it brightens them.
+  - Each one starts its sweep at a point of the cycle drawn from its `id`, so no two are in step.
+
+- A :SplitJelly: figure swells to 105% of its drawn size and back once every 1 s, about its centre.
+  - Its circle stays radius 26.
+
+- Each anchovy of an :AnchovySchool: flicks its tail: its figure turns 10° to either side of its heading and back, 4 times a second, about its head.
+  - The anchovies of a school flick out of step, each one an eighth of the cycle behind the one before it.
+  - The figure faces the way the :AnchovySchool: sweeps.
+
+- An :ArrowWorm: wriggles while it lunges: its figure, faced along the lunge, is drawn in 4 strips from head to tail, each shifted sideways by a wave of 3 px that runs from head to tail 5 times a second.
+  - In every other phase it is drawn straight, its quiver while aiming unchanged.
+  - Its circle stays radius 14.
+
+- A :StingingJelly: bell pulses, narrowing to 90% of its width and lengthening to 110% of its height and back once every 1.0 s, and its tentacle segments sway.
+  - Each segment is drawn shifted up to 4 px across the line of the tentacles, in a wave that runs from the bell to the last segment once every 1.5 s.
+  - Its bell and segment circles stay where they are, and their radii unchanged.
+
+- Each :GeneFragment: not yet collected bobs and glows: its figure is drawn up to 3 px above and below its position, once every 2 s, inside a halo of radius 20 in the palette's gene-fragment colour whose opacity rises from 30% to 70% and falls back on the same cycle.
+  - Each :GeneFragment: of a :Level: is a sixth of the cycle behind the one before it.
+  - Its circle stays at its position, radius 12.
+
+- Each :PlanktonCloud: not yet used drifts and twinkles: its figure is drawn moving round a circle of 4 px about its position once every 5 s, with 6 specks of radius 1.5 px in the palette's plankton colour inside its circle.
+  - Each speck lights up and fades out over 0.4 s, at moments that look random, at least once every 2 s.
+  - The same `tick` always draws the same specks, and the twinkle changes no :RunSeed: draw.
+  - Its circle stays at its position, radius 30.
+
+- The :Rift: figure swirls about its centre: one turn every 8 s while closed, one turn every 2 s while open.
+  - An open :Rift: has a halo of radius 56 in the palette's open-rift colour, its opacity rising from 30% to 60% and back once every 1.2 s.
+  - When the :Rift: opens, its figure grows from 60% to its full size over 0.6 s, and a ring in the open-rift colour widens from 40 px to 80 px and fades out over the same 0.6 s.
+  - Its circle stays radius 40, and it can be entered from the tick it opens.
+
+- Collecting a :GeneFragment: or using up a :PlanktonCloud: shows a burst where it lay.
+  - A :GeneFragment: throws out 8 sparks of radius 2 px in the palette's gene-fragment colour, evenly spread, flying 30 px out and fading over 0.4 s.
+  - A :PlanktonCloud: throws out 10 specks of radius 1.5 px in the palette's plankton colour, evenly spread, flying 40 px out and fading over 0.5 s.
+
+- Losing one of the :Hearts: shows the loss: the heart going from :Hud: grows to 150% and fades out over 0.5 s where it stood, and a ring in the palette's heart colour widens from 24 px to 48 px around the :Jellyfish: and fades out over 0.3 s.
+  - The :Invulnerability: blink is unchanged.
+
+- A purified :Predator: dissolves: its figure stays drawn where it was purified, growing to 130% of its size and fading out over 0.5 s, while 6 specks in the palette's sting colour rise 20 px from it and fade.
+  - A purified :StingingJelly: dissolves with its tentacle segments, each growing to 130% about its own centre and fading out with the bell.
+  - Each anchovy of a purified :AnchovySchool: dissolves where it was.
+  - A dissolving figure cannot touch the :Jellyfish: and is not in :StateSnapshot:.
+  - A :SplitJelly: that splits does not dissolve.
+
+- Each :Level: after the first is dived into: for 0.8 s from its start it is drawn shifted 120 px down, rising to its place, under the palette's darkness overlay fading from fully opaque to clear.
+  - :Hud: is drawn above it, unshifted.
+  - The :Level: plays as usual during the 0.8 s.
+
+- :TitleScreen: and :RegenerationScreen: have a drifting background: 12 motes of radius 2 to 5 px in the palette's bell colour at 25% opacity rise at 15 to 30 px/s, swaying up to 10 px to either side of their line, and come back in at the bottom after leaving at the top.
+  - :TitleScreen: draws them over the sunlit water gradient of the palette.
+  - :RegenerationScreen: draws them over the :Level: as it stood at the :RunEnd:.
+  - Their sizes, speeds and starting places are the same every time the screen opens.
+
+- The :Jellyfish: shrinks into its :Polyp: and unfurls out of it: over the first 0.4 s of the :Polyp: stage, the :Jellyfish: figure, tentacles with it, shrinks to 40% and fades out while the polyp figure grows from 40% to its full size and fades in; over the last 0.4 s the same is played backwards.
+  - Both figures scale about the :Jellyfish: centre.
+  - Between the two, only the polyp figure is drawn, at its full size.
+  - The :Jellyfish: does not pulse while it is a :Polyp:.
+  - The :Polyp: circle stays radius 24 throughout.
+
+- Every text of the game - on :TitleScreen:, :PauseMenu:, :RegenerationScreen:, the scoreboard page at `/scoreboard`, :DivePage: and in :Hud: - is set in Nunito, with `sans-serif` as the fallback.
+  - Headings are weight 800, buttons and :Hud: labels 600, every other text 400.
+
+- During a :Run:, a control legend is drawn on the canvas at the bottom left of the :Level:, 16 px from its left and bottom edges, in 4 lines: `Swim: arrow keys or WASD`, `Sting: Space`, `Dash: Shift`, `Pause: P or Esc`.
+  - Its text is Nunito 14 px, weight 400: each action label, up to and including the colon, in the palette's HUD text-secondary colour, and the keys after it in the HUD text colour.
+  - It sits on a panel in the palette's HUD panel colour at 80% opacity.
+  - Like :Hud:, it is drawn above the darkness and unshifted while a :Level: is dived into.
+  - It is only drawn: nothing in the :Level: collides with it.
+  - No :GeneFragment: is placed under :Hud: or the control legend: every :GeneFragment: circle lies wholly outside the rectangles from `(0, 0)` to `(240, 260)` and from `(0, 580)` to `(260, 720)`, besides keeping its other placement rules.

@@ -1,0 +1,89 @@
+# Any model pi supports works (https://pi.dev): a capable one to talk to, a smaller, cheaper one for the coding.
+harness-model: amazon-bedrock/eu.anthropic.claude-opus-5-5:medium  # you talk to it: it writes the specs and plans the work
+coding-model: amazon-bedrock/eu.anthropic.claude-haiku-5-5:low     # it writes the code
+# The :level is how hard each thinks - off, minimal, low, medium, high, xhigh or max. The reviews and judges run on the
+# coding model but think medium, as models: below shows.
+
+# Every other setting is written out below with the value turri uses for it, so the file says how the project is
+# built: change one to change it. The optional ones, which have no value of their own, are commented out - uncomment
+# one to use it. docs/config.md has them all.
+
+# Conformance tests: all (or true) - every functional spec of a module with test reqs; chosen - those with acceptance
+# tests and those the chooser picks as each pulse ends; module - the chooser picks, and plans them, once the whole
+# module is regenerated; false - none written or run. Those you ask for are written under any of them.
+conformance-tests: false
+
+# Whether the code and its tests are reviewed once they pass - two reviews at most, the second weighed by the arbiter.
+review: false
+
+# Whether turri stops a running pulse the spec has moved on from. false: it lands, the change regenerated on top.
+allow-to-stop-jobs: true
+
+# Whether every pulse that lands code releases it, as the project's release guidance says.
+release-after-pulse: false
+
+# What the testing scripts run on: in-place - the code itself; copy - a fresh copy of it.
+testing-scripts-run-on: in-place
+
+# Seconds each agent turn has, for every role without its own; 0 for none.
+turn-limit: 120
+
+# How many pulses run at once, on modules that share nothing - half this machine's cores, one to four.
+parallel-jobs: 4
+
+# Tokens of work an agent holds before it is compacted between turns; at least 1000.
+compact-at: 100000
+
+# How big a pulse may be: the most functional specs the planner groups into one, and the most lines of spec - its
+# functional specs with the definitions they bring - before a group is split again.
+max-specs-per-pulse: 3
+max-lines-per-pulse: 120
+
+# Rules left out of the spec-writing agents' prompts - the files of genome/rules/, without .md: [concise-specs].
+rules-off: []
+
+# Credentials the agents' commands need while they work: dotenv files by path, and variables from turri's
+# environment by name - files: [.env], vars: [MY_SERVICE_API_KEY]. Their values are masked in everything an agent is shown.
+agent-env:
+  files: []
+  vars: []
+
+# Folders of this machine an agent's commands may read beside the usual ones - a toolchain somewhere unusual: [/srv/zig].
+toolchains: []
+
+# The testing scripts, by path from the project root - written here by the skill that writes them. One not named is
+# looked for at the root, then in test_scripts/. Each runs the static checks of what it tests - the formatter, the
+# linter, the type checker - with the tests, exiting 80 when the tests pass and only the checks do not. The prepare
+# script, optional, runs on the build before every conformance testing script run.
+unittests-script: test_scripts/run_unittests_typescript.sh
+conformance-tests-script: test_scripts/run_conformance_tests_typescript.sh
+# prepare-environment-script: test_scripts/prepare_environment_python.sh
+
+# Optional: the .plain file turri regenerate builds when none is named.
+module: regeneration.plain
+
+# Optional, under conformance-tests: chosen or module: how many functional specs of a module may be chosen - a count or a share.
+# Without it, any number.
+# conformance-budget: 30%
+
+# Optional: the judge and test review of a conformance run, when not on coding-model. A model is provider/id,
+# provider/id:thinking, or { model, thinking } - thinking is off, minimal, low, medium, high, xhigh or max.
+# judge-model: amazon-bedrock/eu.anthropic.claude-opus-5-5:high
+
+# Optional: each agent role's own model, thinking and turn limit. Without it, every role runs on coding-model and the
+# conversation's side on harness-model, each thinking as written here. What an entry leaves out it takes from default.
+# models:
+#   default: amazon-bedrock/eu.anthropic.claude-haiku-5-5
+#   chat: amazon-bedrock/eu.anthropic.claude-opus-5-5                   # the conversation - as harness-model, which it wins over
+#   chooser: { model: amazon-bedrock/eu.anthropic.claude-opus-5-5, thinking: medium } # chooses what gets conformance tests under turri regenerate
+#   planner: { model: amazon-bedrock/eu.anthropic.claude-opus-5-5, thinking: medium } # cuts the work into pulses
+#   diagnosis: { model: amazon-bedrock/eu.anthropic.claude-opus-5-5, thinking: medium } # looks into a pulse that failed for good
+#   release: { model: amazon-bedrock/eu.anthropic.claude-haiku-5-5, thinking: low } # turri release's agent, and release-after-pulse's
+#   coding: { model: amazon-bedrock/eu.anthropic.claude-haiku-5-5, thinking: low, turn-limit: 180 } # as coding-model, which it wins over
+#   conformance: { model: amazon-bedrock/eu.anthropic.claude-haiku-5-5, thinking: low } # writes the conformance tests
+#   explorer: { model: amazon-bedrock/eu.anthropic.claude-haiku-5-5, thinking: low } # explores the code for a conformance run
+#   reviewer: { thinking: medium }                                      # reviews the code and its unit tests
+#   test-reviewer: { model: amazon-bedrock/eu.anthropic.claude-opus-5-5, thinking: medium } # reviews the conformance tests
+#   judge: { model: amazon-bedrock/eu.anthropic.claude-opus-5-5, thinking: medium } # judges a failing conformance run - as judge-model, which it wins over
+#   arbiter: { model: amazon-bedrock/eu.anthropic.claude-opus-5-5, thinking: medium } # weighs a second review
+#   debugger: { model: amazon-bedrock/eu.anthropic.claude-opus-5-5, thinking: medium } # a fresh look at unit tests that keep failing the same way

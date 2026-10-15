@@ -1,0 +1,31 @@
+---
+import:
+  - undying-tide-base
+description: The ocean - the play area, the game loop, the jellyfish swimming, and pausing.
+---
+
+***functional specs***
+
+- :TitleScreen: shows the heading `Turritopsis Dohrnii: The Undying Tide` and a `Dive` button, which has the focus when the page opens.
+  - Activating `Dive` (Enter or Space on it) opens :DivePage:, which starts a new :Run:.
+  - :DivePage: draws the :Level: as water in the sunlit gradient of the palette, top to bottom, with the :Jellyfish: at its centre, `(640, 360)`.
+  - :DivePage: opened directly also starts a new :Run:.
+
+- The :Jellyfish: swims while a direction key is held: the arrow keys, or W, A, S and D.
+  - Holding a direction accelerates it at 900 px/s² in that direction, up to a top speed of 240 px/s; two keys at once swim diagonally at the same top speed.
+  - With no direction held it glides on, slowing down until it stops within 0.5 s.
+  - Holding opposite directions together counts as holding neither of them.
+  - Its centre stays at least 24 px inside each edge of the :Level:; at an edge, its speed into that edge drops to zero.
+  - A key held while the page does not have the focus is released when the page loses it.
+
+- A :Run: started with the URL parameter `seed=<integer>` - `/dive?seed=42`, or `/?seed=42` before `Dive` - uses that :RunSeed:; otherwise its :RunSeed: is chosen at random.
+  - While :DivePage: is open, `window.__undyingTide` is a getter returning a fresh :StateSnapshot: with `seed` (the :RunSeed:), `tick` (updates since the :Run: started), `paused` (boolean) and `jellyfish` (`x`, `y`, `vx`, `vy`, in px and px/s).
+  - A `seed` that is not an integer is ignored.
+  - Two :Run: items with the same :RunSeed: and the same keys pressed on the same ticks have the same :StateSnapshot: at every tick.
+
+- P or Escape pauses a :Run: and shows the :PauseMenu:; while paused, `tick` and every position stand still.
+  - :PauseMenu: shows the heading `Paused` and the buttons `Resume`, which has the focus, and `Surface`.
+  - `Resume`, P or Escape resumes the :Run: where it stood.
+  - `Surface` ends the :Run: without a score and opens :TitleScreen:.
+  - The :Run: pauses by itself when the page loses the focus or is hidden, and stays paused until resumed.
+  - Direction keys held when the :Run: pauses count as released when it resumes.

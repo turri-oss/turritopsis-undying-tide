@@ -1,0 +1,51 @@
+---
+import:
+  - stdlib/frontend/react-vite
+  - stdlib/frontend/conformance/react-vite
+  - undying-tide-concepts
+description: Turritopsis Dohrnii - The Undying Tide, a keyboard-only browser game in which the immortal jellyfish dives through endless, ever harder ocean depths for the highest score on a local top-10 scoreboard; the shared stack, architecture and test reqs of every module.
+---
+
+***implementation reqs***
+
+- :Implementation: has no backend and makes no network call; its API layer stays empty.
+
+- :Implementation: supports the current desktop versions of Chrome, Firefox, Safari and Edge.
+
+- :Implementation: draws the game world on one HTML5 Canvas 2D element, with no game or rendering library.
+  - The play area is 1280×720 logical pixels, scaled to fit the window with its aspect ratio kept, letterboxed, and sharp on high-density screens.
+
+- :Implementation: runs the game on a fixed timestep of 60 updates per second, driven by `requestAnimationFrame` with an accumulator, catching up at most 5 updates per frame, and draws once per frame.
+
+- :Implementation: keeps the game in `src/game/`, apart from the React code:
+  - `src/game/sim/` holds the simulation - world state, levels, the player, predators, collisions, scoring - as plain TypeScript with no DOM, canvas or React access.
+  - `src/game/render/` draws a simulation state on a canvas, and changes no state.
+  - `src/game/input/` maps keyboard events, by `KeyboardEvent.code`, to game actions.
+  - `src/game/loop.ts` runs the fixed-timestep loop, feeding actions to the simulation and states to the renderer.
+  - React pages host the canvas and show every screen around it; the in-game HUD is drawn on the canvas.
+
+- :Implementation: makes the simulation deterministic: every random choice comes from one seeded pseudo-random generator in `src/game/sim/random.ts`, so a seed and a sequence of actions always give the same states.
+
+- :Implementation: draws every figure - the player, each predator kind, gene fragments, plankton, the Rift - from its own SVG file in `src/game/art/`, imported through Vite, loaded once into an image before a run starts.
+
+- :Implementation: takes every colour from the palette in [resources/color_pallete.yaml](resources/color_pallete.yaml), transcribed into `src/game/palette.ts`, which is the only place colours are written in code, SVG files included.
+
+- :Implementation: is operable by keyboard alone on every screen, with a visible focus on the element in focus.
+
+- :Implementation: keeps the scoreboard in `localStorage` under the key `turritopsis.scoreboard.v1` as JSON, through one module in `src/lib/scoreboard.ts`.
+  - Stored data that does not validate is treated as an empty scoreboard.
+
+- :UnitTests: test the simulation headless, by stepping it with a fixed seed and a sequence of actions and asserting on its state.
+
+- :UnitTests: test the renderer against a stand-in 2D context that records its calls, never against pixels.
+
+***test reqs***
+
+- :ConformanceTests: open the game with the `seed` URL parameter, so every run they play has a known level layout.
+
+- :ConformanceTests: play only through the keyboard, with Playwright's `page.keyboard`, as a player does.
+
+- :ConformanceTests: observe gameplay through the screen and the read-only `window.__undyingTide` state snapshot, never by changing game state.
+  - They wait for a state with `expect.poll` or `expect(...).toPass`, never a fixed sleep.
+
+- :ConformanceTests: start each test from an empty `localStorage`, and seed a scoreboard by writing `turritopsis.scoreboard.v1` before the page loads.
