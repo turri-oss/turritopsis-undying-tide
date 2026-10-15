@@ -13,7 +13,8 @@ description: The ocean - the play area, the game loop, the jellyfish swimming, a
 
 - The :Jellyfish: swims and steers relative to its :Heading:, with the direction keys: the arrow keys, or W, A, S and D.
   - Arrow Up or W swims forward, along its :Heading:; Arrow Down or S swims backward, opposite its :Heading:, without turning it.
-  - Arrow Left or A turns its :Heading: anticlockwise and Arrow Right or D clockwise, at 180° per second, whether it is moving or not; turning alone does not swim.
+  - Arrow Left or A turns its :Heading: anticlockwise and Arrow Right or D clockwise, at 90° per second, whether it is moving or not.
+  - While Left or Right is held and neither Up nor Down, it drifts forward in gentle strokes as it turns, never turning on the spot: one every 0.8 s, the first the moment the turn starts, each thrusting for 0.3 s at 250 px/s² along its :Heading: as it stands, up to 70 px/s, and gliding between them as after any stroke.
   - Its :Heading: is 0 at the start of a :Run:, and keeps its value while no turning key is held.
   - It swims in strokes, one every 0.8 s while Up or Down is held, the first the moment either is first held after neither was.
   - Each stroke thrusts for 0.3 s, accelerating it at 700 px/s² forward or backward along its :Heading: as it stands at that moment, up to a top speed of 280 px/s; for the other 0.5 s it glides, slowing by 200 px/s².

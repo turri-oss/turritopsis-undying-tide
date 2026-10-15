@@ -41,6 +41,21 @@ predators:
   drift: "#B026FF"           # corruption: glitches, outlines
   drift-flicker: "#FF3EA5"
 
+scenery:                     # landscape, only drawn; muted so it never reads as a gameplay object
+  sand: "#6E7F6A"           # seabed of the sunlit and twilight depths
+  sand-deep: "#2B3A3E"      # seabed of the midnight and abyss depths
+  rock: "#3E5A63"
+  rock-dark: "#1A2C33"
+  rock-far: "#1F5566"       # distant arches, drawn at 40% opacity
+  coral: "#B5735E"
+  coral-soft: "#8E7AA8"
+  kelp: "#4F7A52"
+  kelp-dark: "#2F4F3A"
+  bubble: "#CFE8EC"         # drawn at 30% opacity
+  fish: "#7FA3AD"
+  vent: "#5A3F38"
+  vent-glow: "#D9784A"      # drawn at 40% opacity
+
 hud:
   text: "#F2F5F3"
   text-secondary: "#8FB3BC"

@@ -52,3 +52,7 @@ description: The concepts every Undying Tide module shares - the run, the level,
 - :Sting: is the ring of stinging cells the :Jellyfish: fires around itself, reaching 90 px from its centre, which purifies a :Predator: it reaches.
 
 - :Dash: is a short burst of the :Jellyfish: at three times its top speed.
+
+- :Wave: is a surge of current in a :Level:, a circle with a centre and a radius, flowing in one direction at one strength, that pushes the creatures it covers and harms none.
+  - Its direction is in degrees, as a :Heading: is: 0 straight up the :Level:, increasing clockwise.
+  - Its strength is the speed in px/s it pushes at.

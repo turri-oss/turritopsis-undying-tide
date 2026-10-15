@@ -77,10 +77,11 @@ description: Predators - the Drift-corrupted predators, hearts, the sting, the d
   - :Hud: shows the :Dash: as ready, or as a filling ring while it waits.
   - :StateSnapshot: adds `dashing` (boolean) and `dashCooldown` (seconds left, 0 when ready).
 
-- A :Jellyfish: that loses its last heart is a :Polyp: for 3 s where it stands, then turns back into the :Jellyfish: there with its :Hearts: at 3.
+- A :Jellyfish: that loses its last heart is a :Polyp: for 3 s where it stands, then turns back into the :Jellyfish: there with its :Hearts: at 3 and its :Pulses: refilled to their start for the :Level:.
+  - It turns back upright, its :Heading: 0, whatever its :Heading: was.
   - Its speed drops to 0 at once, and it does not move while a :Polyp:; direction keys, Shift and Space do nothing.
   - :Pulses: does not run down while it is a :Polyp:.
-  - A :Jellyfish: whose :Pulses: reaches 0 becomes a :Polyp: in the same way, its :Hearts: kept as they are; when it turns back, its :Pulses: are refilled to their start for the :Level: and its :Hearts: stay as they were.
+  - A :Jellyfish: whose :Pulses: reaches 0 becomes a :Polyp: in the same way; it turns back just as after losing its last heart, its :Hearts: at 3 and its :Pulses: refilled to their start for the :Level:.
   - :Hud: shows `Out of pulses - regenerating` in place of `Regenerating` for a :Polyp: that came from running out of :Pulses:.
   - A :Polyp: touching an open :Rift: enters it, as the :Jellyfish: does.
   - It has :Invulnerability: for the 3 s, in place of the 2 s that follow a hit, and does not blink.
@@ -161,7 +162,7 @@ description: Predators - the Drift-corrupted predators, hearts, the sting, the d
   - :StateSnapshot: adds `upgradeChoice`, the list of the `id` of each :Upgrade: offered, `null` while no :UpgradeChoice: is shown, and `upgrades`, an object giving for every :Upgrade: `id` the times it has been taken in the :Run:, 0 when never.
 
 - Each level of Extra heart raises the most :Hearts: the :Jellyfish: can have by 1, from 3 to at most 6, and adds 1 to its :Hearts: when taken.
-  - A :Polyp: turns back with its :Hearts: at that most, `3 +` the Extra heart level, after losing its last heart.
+  - A :Polyp: turns back with its :Hearts: at that most, `3 +` the Extra heart level, whether it lost its last heart or ran out of :Pulses:.
   - :Hud: shows one heart for each of the :Hearts:, up to 6.
   - :StateSnapshot: adds `maxHearts`.
 
@@ -196,3 +197,11 @@ description: Predators - the Drift-corrupted predators, hearts, the sting, the d
   - For a :StingingJelly: this holds for its bell and every tentacle segment; an :AnchovySchool:, placed off-screen, swims in as before.
   - Once placed, a :Predator: or a moving :GeneFragment: may move into the rectangle, as may the :Jellyfish:.
   - Every other placement rule still holds, and the same :RunSeed: still gives the same placements.
+
+- A pushing :Wave: pushes every :Predator: whose circle overlaps it along its direction at its push, on top of the :Predator:'s own movement, as it pushes the :Jellyfish:.
+  - A :StingingJelly: is pushed when its bell overlaps the :Wave:, its tentacle segments trailing as before; an :AnchovySchool: is pushed whole when any anchovy overlaps it.
+  - A :FlickerJelly: out of the :Level: is not pushed.
+  - Every rule that keeps a :Predator: within the :Level: still holds; an :AnchovySchool: pushed out of the :Level: counts as having wholly left it.
+  - The push does not change where a :Predator: aims or heads: an :ArrowWorm:'s aimed point and a wanderer's picked point stay as they were.
+  - The :Jellyfish: is pushed during a :Dash: too; a :Polyp: is not moved.
+  - A :Wave: and its timers stand still while an :UpgradeChoice: is shown.
