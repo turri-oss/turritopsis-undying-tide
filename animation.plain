@@ -172,6 +172,7 @@ description: Animation - the figures of the deep move, and every event of a run 
   - Beside each icon but Stinging tentacles stands its level in Roman numerals, `I`, `II` or `III`, in the HUD text colour.
   - The row is not shown while no :Upgrade: is taken.
   - :Hud: stays within the rectangle from `(0, 0)` to `(300, 290)`, with 6 hearts and all seven kinds taken.
+  - Every text line of :Hud: lies wholly inside its panel, with the panel's padding on both sides: the panel is as wide as its longest line needs, `Out of pulses - regenerating` included, and at least as wide as it is now, still within that rectangle.
 
 - With Stinging tentacles, each :Jellyfish: tentacle carries 5 barbs, short strokes 4 px long in the palette's sting colour, evenly spread from rim to tip, moving with the tentacle.
   - The barbs of a tentacle glint, brightening to full and back over 0.2 s once every 1 s, each tentacle at its own point of the cycle.
