@@ -11,6 +11,8 @@ description: The concepts every Undying Tide module shares - the run, the level,
 
 - :Jellyfish: is the player's Turritopsis, a circle of radius 24 in the :Level: for collisions, drawn as its own figure.
 
+- :Heading: is the direction the top of the :Jellyfish: bell faces, in degrees from 0 up to but not including 360: 0 is straight up the :Level:, 90 to the right, increasing clockwise.
+
 - :Run: is one game, from the dive until it ends.
 
 - :DivePage: is the page at `/dive` on which a :Run: is played, holding the game canvas.

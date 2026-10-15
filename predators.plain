@@ -3,8 +3,8 @@ import:
   - undying-tide-base
 requires:
   - depths
-exported_concepts: [":CombJelly:", ":AnchovySchool:", ":ArrowWorm:", ":StingingJelly:", ":FlickerJelly:", ":SplitJelly:", ":Polyp:", ":Sunfish:"]
-description: Predators - the Drift-corrupted predators, hearts, the sting and the dash.
+exported_concepts: [":CombJelly:", ":AnchovySchool:", ":ArrowWorm:", ":StingingJelly:", ":FlickerJelly:", ":SplitJelly:", ":Polyp:", ":Sunfish:", ":Upgrade:", ":UpgradeChoice:"]
+description: Predators - the Drift-corrupted predators, hearts, the sting, the dash and the jellyfish's upgrades.
 ---
 
 ***definitions***
@@ -24,6 +24,19 @@ description: Predators - the Drift-corrupted predators, hearts, the sting and th
 - :Polyp: is the stage the :Jellyfish: turns into on losing its last heart, rooted where it stands until it regenerates; its circle stays radius 24.
 
 - :Sunfish: is a huge ocean sunfish :Predator:, a circle of radius 70, that eats the :Jellyfish:.
+
+- :Upgrade: is a lasting improvement of the :Jellyfish: for the rest of a :Run:, one of seven kinds, each with an `id`: Stinging tentacles (`stingingTentacles`), Extra heart (`extraHeart`), Quick regeneration (`quickRegeneration`), Hard bell (`hardBell`), Wide sting (`wideSting`), Fragment magnet (`fragmentMagnet`) and Longer tentacles (`longerTentacles`).
+  - A :Run: starts with no :Upgrade:.
+  - Stinging tentacles can be taken once; every other kind has levels 1 to 3, one more each time it is taken.
+
+- :UpgradeChoice: is the screen shown over the :Level: of :DivePage: between entering an open :Rift: and the start of the next :Level:, on which the player takes one :Upgrade:.
+
+- :TentacleReach: is the circle the :Jellyfish: tentacles touch with, radius 30, its centre 50 px from the :Jellyfish: centre: straight behind it, opposite its :Heading:, at rest, turned towards the direction opposite the :Jellyfish: velocity by `min(1, <speed> / 240)` of the angle between the two.
+  - It is worked out from the simulation state alone, never from the drawn tentacles.
+
+***implementation reqs***
+
+- :Implementation: draws the offers of an :UpgradeChoice: from a generator of `src/game/sim/random.ts` seeded from the :RunSeed: and the :Depth: of the :Rift: entered, apart from the one the :Level: layouts are drawn from, so taking an :Upgrade: changes no other draw of the :Run:.
 
 ***functional specs***
 
@@ -54,8 +67,8 @@ description: Predators - the Drift-corrupted predators, hearts, the sting and th
   - :StateSnapshot: adds `purified` (the count for the :Run:) and `stingCooldown` (seconds left, 0 when ready).
 
 - Shift starts a :Dash:: for 0.25 s the :Jellyfish: swims at 720 px/s, and it has :Invulnerability: for as long.
-  - The :Dash: goes in the direction of the held direction keys, else in the direction the :Jellyfish: is moving.
-  - Shift does nothing when no direction key is held and the :Jellyfish: is at rest.
+  - The :Dash: goes forward along the :Jellyfish: :Heading: while Arrow Up or W is held, backward while Arrow Down or S is held, else in the direction the :Jellyfish: is moving.
+  - Shift does nothing when neither Up nor Down is held and the :Jellyfish: is at rest.
   - A :Dash: costs no :Pulses:, which run down at the swimming rate of 1 a second while it lasts.
   - Shift does nothing for 2 s after a :Dash: starts; holding Shift does not dash again.
   - A :Dash: ends early at an edge of the :Level:, and the :Jellyfish: leaves it at its top speed of 280 px/s.
@@ -67,6 +80,8 @@ description: Predators - the Drift-corrupted predators, hearts, the sting and th
 - A :Jellyfish: that loses its last heart is a :Polyp: for 3 s where it stands, then turns back into the :Jellyfish: there with its :Hearts: at 3.
   - Its speed drops to 0 at once, and it does not move while a :Polyp:; direction keys, Shift and Space do nothing.
   - :Pulses: does not run down while it is a :Polyp:.
+  - A :Jellyfish: whose :Pulses: reaches 0 becomes a :Polyp: in the same way, its :Hearts: kept as they are; when it turns back, its :Pulses: are refilled to their start for the :Level: and its :Hearts: stay as they were.
+  - :Hud: shows `Out of pulses - regenerating` in place of `Regenerating` for a :Polyp: that came from running out of :Pulses:.
   - A :Polyp: touching an open :Rift: enters it, as the :Jellyfish: does.
   - It has :Invulnerability: for the 3 s, in place of the 2 s that follow a hit, and does not blink.
   - The 3 s do not run while the :Run: is paused.
@@ -127,3 +142,57 @@ description: Predators - the Drift-corrupted predators, hearts, the sting and th
   - Its whole circle stays within the :Level:, from its start on.
   - It stands still while the :Run: is paused and after the :RunEnd:.
   - In :StateSnapshot:, its `kind` is `sunfish`.
+
+- Entering an open :Rift: shows the :UpgradeChoice: before the next :Level: starts: the heading `Choose an upgrade` and 3 different :Upgrade: kinds drawn from the :RunSeed:, each a button with its name, the first with the focus.
+  - Only kinds that can still be taken are offered; with fewer than 3 left, all of them are, and with none left, the next :Level: starts at once with no :UpgradeChoice:.
+  - Below the heading it shows `Depth <n> cleared`, the :Depth: of the :Rift: entered.
+  - The buttons stand side by side, each showing, under its name, the level it brings - `Level <n> of 3`, or `Once` for Stinging tentacles - and the line of what it gives:
+    - Stinging tentacles: `Tentacles purify predators they touch`.
+    - Extra heart: `Up to <n> hearts (was <m>)`.
+    - Quick regeneration: `Polyp stage <t> s (was <t0> s)`.
+    - Hard bell: `<t> s invulnerable after a hit (was <t0> s)`.
+    - Wide sting: `Sting reaches <r> px (was <r0> px)`.
+    - Fragment magnet: `Pulls fragments within <r> px` at level 1, `Pulls fragments within <r> px (was <r0> px)` after.
+    - Longer tentacles: `Tentacles reach <r> px (was <r0> px)`, where the reach is the :TentacleReach: centre distance plus its radius.
+  - Arrow Left, Arrow Right, Arrow Up and Arrow Down, and A, D, W and S, move the focus between the buttons; Enter or Space on one takes that :Upgrade: and starts the next :Level:.
+  - While it is shown, `tick`, every position, timer and :Pulses: stand still as when paused, `paused` stays false, and P and Escape do nothing.
+  - Direction keys, Shift and Space held when it closes count as released.
+  - The same :RunSeed: and the same :Upgrade: items taken give the same offers at every :UpgradeChoice:.
+  - :StateSnapshot: adds `upgradeChoice`, the list of the `id` of each :Upgrade: offered, `null` while no :UpgradeChoice: is shown, and `upgrades`, an object giving for every :Upgrade: `id` the times it has been taken in the :Run:, 0 when never.
+
+- Each level of Extra heart raises the most :Hearts: the :Jellyfish: can have by 1, from 3 to at most 6, and adds 1 to its :Hearts: when taken.
+  - A :Polyp: turns back with its :Hearts: at that most, `3 +` the Extra heart level, after losing its last heart.
+  - :Hud: shows one heart for each of the :Hearts:, up to 6.
+  - :StateSnapshot: adds `maxHearts`.
+
+- Each level of Quick regeneration shortens the :Polyp: stage by 0.6 s, from 3 s to 2.4, 1.8 and 1.2 s, and its :Invulnerability: with it.
+  - A :Polyp: stage already running when it is taken keeps its time left.
+
+- Each level of Hard bell lengthens the :Invulnerability: that follows a hit by 0.75 s, from 2 s to 2.75, 3.5 and 4.25 s, the :Jellyfish: blinking throughout.
+  - It does not lengthen the :Invulnerability: of a :Dash: or of a :Polyp:.
+
+- Each level of Wide sting lengthens the reach of the :Sting: by 25 px, from 90 px to 115, 140 and 165 px.
+  - The :Sting: reaches a :Predator: when the distance between their centres is at most the reach plus the :Predator: radius.
+  - Its ring widens to the reach over the same 1 s.
+
+- With Fragment magnet, every :GeneFragment: not yet collected whose centre is within 120, 180 or 240 px of the :Jellyfish: centre, at level 1, 2 or 3, moves straight towards that centre at 150 px/s.
+  - One further away stays where it is, and stays where it stopped once out of range again.
+  - It moves while the :Jellyfish: is a :Polyp: too, and stands still while the :Run: is paused or on an :UpgradeChoice:.
+  - The `x`, `y` of each :GeneFragment: in :StateSnapshot: follow it.
+
+- With Stinging tentacles, a :Predator: other than a :Sunfish: whose circle overlaps the :TentacleReach: is purified, as by the :Sting:, and takes none of the :Hearts:, even when it touches the :Jellyfish: circle in the same moment.
+  - For a :StingingJelly: only its bell counts; its tentacle segments overlapping the :TentacleReach: purify nothing.
+  - Any anchovy overlapping it purifies the whole :AnchovySchool:; a :FlickerJelly: counts only while in the :Level:.
+  - A :SplitJelly: splits instead, as when stung; the two :CombJelly: items it splits into can be purified by it from the next update.
+  - It purifies during an :Invulnerability: too, and not while the :Jellyfish: is a :Polyp:.
+  - :StateSnapshot: adds `tentacleReach`, with `x`, `y` and `radius`.
+
+- Each level of Longer tentacles moves the :TentacleReach: centre 15 px further from the :Jellyfish: centre and grows its radius by 5 px: from 50 px and 30 px to 65 and 35, 80 and 40, and 95 and 45 px, so it reaches 80, 100, 120 and 140 px out.
+  - It turns with the :Jellyfish: velocity as before; only its distance and radius change.
+  - `tentacleReach` in :StateSnapshot: follows it.
+  - It is offered and can be taken before Stinging tentacles; its levels change the :TentacleReach: at once, and purify only once Stinging tentacles is taken too.
+
+- No :GeneFragment:, :PlanktonCloud:, :Rift: or :Predator: is placed with any part of its circle inside the rectangle from `(0, 0)` to `(300, 290)` of the :Level:, the area :Hud: covers.
+  - For a :StingingJelly: this holds for its bell and every tentacle segment; an :AnchovySchool:, placed off-screen, swims in as before.
+  - Once placed, a :Predator: or a moving :GeneFragment: may move into the rectangle, as may the :Jellyfish:.
+  - Every other placement rule still holds, and the same :RunSeed: still gives the same placements.

@@ -32,21 +32,30 @@ description: Animation - the figures of the deep move, and every event of a run 
   - The router's `basename` is `import.meta.env.BASE_URL`, and every link, navigation and asset URL is relative to it.
   - `npm run build` also writes `dist/404.html`, a copy of `dist/index.html`, so reloading `/dive` or `/scoreboard` under the base path opens the game.
 
+- :Implementation: draws the icon of each :Upgrade: kind from its own SVG file, `src/game/art/upgrade-<id>.svg`, used both on the :UpgradeChoice: and in :Hud:.
+
 ***functional specs***
 
-- The :Jellyfish: figure pulses: its bell narrows to 90% of its width and lengthens to 110% of its height, then relaxes back to its drawn size, once every 1.2 s, and once every 0.8 s while a direction key is held.
-  - Opposite direction keys held together count as no direction held.
-  - While a direction key is held, each contraction starts with a stroke of the :Jellyfish:; a stroke that starts mid-pulse takes the bell into its contraction from where it stands, without a jump.
+- The :Jellyfish: figure pulses: its bell narrows to 90% of its width and lengthens to 110% of its height, then relaxes back to its drawn size, once every 1.2 s, and once every 0.8 s while Arrow Up, W, Arrow Down or S is held.
+  - Up and Down held together count as neither held.
+  - While Up or Down is held, each contraction starts with a stroke of the :Jellyfish:; a stroke that starts mid-pulse takes the bell into its contraction from where it stands, without a jump.
   - The figure pulses about its centre; the :Jellyfish: circle stays radius 24.
 
-- The :Jellyfish: has 4 wavy tentacles in the palette's player tentacles colour, hanging from the lower rim of its bell, each moving on its own.
-  - From left to right they are 58, 66, 62 and 56 px long, sway once every 1.3, 1.7, 1.5 and 1.9 s, and start 0, 0.4, 0.7 and 0.2 of a cycle into their sway.
-  - Each sway is a wave running from the rim to the tip: 0 px across at the rim, growing to 5, 6, 4 and 7 px at the tip, the tip half a cycle behind the rim.
+- The :Jellyfish: has 8 wavy tentacles in the palette's player tentacles colour, hanging from the lower rim of its bell, spread evenly along it, each moving on its own.
+  - From left to right they are 54, 60, 64, 68, 66, 62, 58 and 52 px long, sway once every 3.0, 3.6, 4.1, 3.3, 3.9, 4.4, 3.5 and 3.8 s, and start 0, 0.55, 0.3, 0.8, 0.15, 0.65, 0.4 and 0.9 of a cycle into their sway.
+  - Each sway is a wave running from the rim to the tip: 0 px across at the rim, growing to 9, 11, 8, 10, 12, 9, 11 and 10 px at the tip, the tip a whole cycle behind the rim, so each tentacle holds one full wave along its length.
   - Each contraction of the bell's pulse draws every tip up to 4 px in towards the bell's centre line, and they spread back as the bell relaxes.
   - A tentacle is a smooth curve through at least 8 points, tapering from 3 px wide at the rim to 1 px at the tip.
-  - Its bend follows a change of the :Jellyfish: velocity with a lag growing along it, reaching the tip 0.25 s after the rim, so the tips trail when it turns.
-  - At rest they hang straight down; while it moves they bend to stream out opposite its velocity, more the faster it moves, fully behind it at 240 px/s and above.
-  - They are drawn beneath the bell.
+  - Its bend follows a change of the :Jellyfish: velocity with a lag growing along it, reaching the tip 0.8 s after the rim, so the tips keep drifting the old way after it turns or stops.
+  - At rest they hang straight out of the lower rim, away from the bell's top; while it moves they bend from that line to stream out opposite its velocity, more the faster it moves, fully behind it at 240 px/s and above.
+  - When it stops, they swing back to hanging straight out of the lower rim over 1.5 s, easing out, never in one step.
+  - They are drawn beneath the bell, the 4 inner ones over the 4 outer ones.
+
+- The :Jellyfish: bell is drawn turned to its :Heading:, its top facing along it, turning as its :Heading: turns and holding its angle while it does not.
+  - The bell's pulse, its core and every mark drawn on it turn with it, and the tentacles hang from its lower rim as turned, keeping their sway, lag and streaming opposite the velocity.
+  - The line the tentacles hang along at rest, and bend from while it moves, turns with the bell: it runs out of the lower rim away from the bell's top as turned, never towards the bottom of the screen while the bell is turned, so no tentacle crosses the bell.
+  - Once it has stopped, the tentacles swing back to that line as the bell holds its angle, hanging straight down only when the bell is upright.
+  - The bell is drawn at the :Heading: alone: the :Jellyfish: circle stays as it is, and the tentacles at rest hang straight out opposite the :Heading:.
 
 - Every :CombJelly:, :FlickerJelly: and :SplitJelly: shimmers: a band of light a quarter of its diameter tall sweeps down its figure from top to bottom once every 0.8 s, clipped to its circle.
   - The band is the palette's comb-jelly colour at 60% opacity, added to the figure's colours so it brightens them.
@@ -117,12 +126,15 @@ description: Animation - the figures of the deep move, and every event of a run 
   - Secondary text is the controls list of :TitleScreen:, the notes of the scoreboard page, and the line under the :RunEnd: reason heading.
   - :PauseMenu: and :RegenerationScreen: sit on a panel in the palette's HUD panel colour at 80% opacity, their buttons outlined in its pulse-bar colour.
 
-- During a :Run:, a control legend is drawn on the canvas at the bottom left of the :Level:, 16 px from its left and bottom edges, in 4 lines: `Swim: arrow keys or WASD`, `Sting: Space`, `Dash: Shift`, `Pause: P or Esc`.
+- During a :Run:, a control legend is drawn on the canvas at the bottom left of the :Level:, 16 px from its left and bottom edges, in 5 lines: `Swim: Up/Down or W/S`, `Turn: Left/Right or A/D`, `Sting: Space`, `Dash: Shift`, `Pause: P or Esc`.
   - Its text is Nunito 14 px, weight 400: each action label, up to and including the colon, in the palette's HUD text-secondary colour, and the keys after it in the HUD text colour.
   - It sits on a panel in the palette's HUD panel colour at 80% opacity.
   - Like :Hud:, it is drawn above the darkness and unshifted while a :Level: is dived into.
   - It is only drawn: nothing in the :Level: collides with it.
-  - No :GeneFragment: is placed under :Hud: or the control legend: every :GeneFragment: circle lies wholly outside the rectangles from `(0, 0)` to `(240, 260)` and from `(0, 580)` to `(260, 720)`, besides keeping its other placement rules.
+  - Nothing is placed under the control legend: no :GeneFragment:, :PlanktonCloud:, :Rift: or :Predator: is placed with any part of its circle inside the rectangle from `(0, 580)` to `(260, 720)`, as none is inside the rectangle :Hud: covers.
+    - For a :StingingJelly: this holds for its bell and every tentacle segment; an :AnchovySchool:, placed off-screen, swims in as before.
+    - Once placed, a :Predator: or a moving :GeneFragment: may move into the rectangle, as may the :Jellyfish:.
+    - Every other placement rule still holds, and the same :RunSeed: still gives the same placements.
 
 - Every page - :TitleScreen:, :DivePage: and the scoreboard page at `/scoreboard` - fills the browser window exactly, with no page margin and no scrollbar, in any window of at least 1024×600.
   - :DivePage: draws its canvas over the whole window; the 1280×720 :Level: is scaled to fit inside it and centred, as before, and the ocean continues into the bands around it.
@@ -138,3 +150,46 @@ description: Animation - the figures of the deep move, and every event of a run 
   - The footer text is in the palette's HUD text-secondary colour, its links in the HUD text colour, underlined.
   - `***plain` is shown as written, with its three asterisks.
   - :TitleScreen: with the footer still fits in the window without scrolling.
+
+- :TitleScreen: shows the goal of the game between its heading and its `Dive` button, in 3 lines: `Dive as deep as you can.`, `Collect every gene fragment to open the Rift to the next depth.` and `Be quick - the faster you reach each Rift, the higher your score.`
+  - The first line is 22 px, weight 600, in the palette's HUD text colour; the other two are 16 px secondary text.
+  - :TitleScreen: with the goal still fits in the window without scrolling.
+  - The line beginning `Score:` that explains the score, on :RegenerationScreen: and the scoreboard page, is 14 px secondary text, at most 640 px wide, wrapping.
+
+- :UpgradeChoice: sits on a panel in the palette's HUD panel colour at 80% opacity, over the :Level: under the palette's darkness overlay at 50% opacity, its texts set as on :PauseMenu:, `Depth <n> cleared` as secondary text.
+  - Each button is a card 220 px wide with its :Upgrade: icon, 48 px, above its name, its level line in the HUD text-secondary colour, and its line of what it gives.
+  - A card is outlined 1 px in the HUD text-secondary colour; the focused one 3 px in the pulse-bar colour and drawn 6 px higher.
+  - The three cards and the panel fit in any window of at least 1024×600.
+
+- :Hud: shows a row of the icons of the :Upgrade: kinds taken, 20 px each, below the hearts, in the order first taken.
+  - Beside each icon but Stinging tentacles stands its level in Roman numerals, `I`, `II` or `III`, in the HUD text colour.
+  - The row is not shown while no :Upgrade: is taken.
+  - :Hud: stays within the rectangle from `(0, 0)` to `(300, 290)`, with 6 hearts and all seven kinds taken.
+
+- With Stinging tentacles, each :Jellyfish: tentacle carries 5 barbs, short strokes 4 px long in the palette's sting colour, evenly spread from rim to tip, moving with the tentacle.
+  - The barbs of a tentacle glint, brightening to full and back over 0.2 s once every 1 s, each tentacle at its own point of the cycle.
+  - They are only drawn, and touch nothing.
+
+- With Extra heart, the core of the :Jellyfish: figure is drawn 10% larger a level, about its own centre, inside a glow of radius 1.5 times the core's in the palette's heart colour at 30% opacity.
+  - The :Jellyfish: circle stays radius 24.
+
+- With Quick regeneration, a shimmer in the palette's plankton colour runs round the rim of the :Jellyfish: bell: an arc a quarter of the rim long, at 50% opacity, going round once every 2, 1.5 or 1 s at level 1, 2 or 3.
+  - The halo of the polyp figure is drawn in the plankton colour in place of the player core colour, its opacity cycle unchanged.
+  - The shimmer follows the bell's pulse.
+
+- With Hard bell, the rim of the :Jellyfish: bell is drawn over as a stroke in the palette's bell-rim colour, 1, 2.5 or 4 px wide and at 50%, 70% or 90% opacity at level 1, 2 or 3, following the bell's pulse.
+  - The :Jellyfish: circle stays radius 24.
+
+- With Wide sting, a ring 1 px wide in the palette's sting colour at 10% opacity is drawn round the :Jellyfish: centre at the reach of the :Sting:, while the :Jellyfish: is not a :Polyp:.
+  - It is drawn beneath every figure and above the water.
+
+- With Fragment magnet, 1, 2 or 3 motes of radius 2 px in the palette's gene-fragment colour circle the :Jellyfish: centre 34 px out, once every 3 s, evenly spread, at level 1, 2 or 3.
+  - A :GeneFragment: moving towards the :Jellyfish: leaves a trail of sparks of radius 1.5 px in the gene-fragment colour, one every 0.1 s where it was, each fading out over 0.3 s.
+  - Motes and sparks are only drawn.
+
+- When a :Level: starts after an :Upgrade: is taken, the :Jellyfish: figure flashes once: a disc of radius 32 in the palette's HUD text colour is drawn over it, fading from 70% opacity to clear over 0.4 s.
+
+- With Longer tentacles, every :Jellyfish: tentacle is drawn 1.25, 1.5 or 1.75 times its length at level 1, 2 or 3.
+  - Its sway at the tip and its tip's draw towards the bell's centre line grow by the same factor; its sway timing, lag and taper from 3 px to 1 px stay as they are.
+  - With Stinging tentacles too, its 5 barbs stay evenly spread from rim to the new tip.
+  - The tentacles are only drawn, and touch nothing.

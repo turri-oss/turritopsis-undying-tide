@@ -26,10 +26,9 @@ description: Depths - gene fragments, the Rift, ever deeper levels, the darkness
 - Each :Level: starts its :Pulses: at `max(20, 65 - 5 × :Depth:)` - 60 at :Depth: 1 - and runs them down by 1 a second while a direction key is held and by 0.5 a second otherwise.
   - Opposite direction keys held together count as no direction held.
   - :Pulses: never runs down while the :Run: is paused.
-  - When :Pulses: reaches 0, it stays at 0 and the :RunEnd: comes, with the reason `pulses`.
+  - When :Pulses: reaches 0, it stays at 0 until it is refilled.
   - :Hud: shows `Pulses <n>`, :Pulses: rounded up, beside a bar of :Pulses: against its start for the :Level:, in the palette's pulse-bar colour, and in its danger colour at 10 or fewer.
   - :StateSnapshot: adds `pulses` (unrounded), `pulsesStart`, `ended` (boolean) and `endReason` (`null` until the :RunEnd:).
-  - At the :RunEnd:, :DivePage: shows its reason over the :Level:: for `pulses`, the heading `Out of pulses` and below it `Your pulses ran out at depth <n>. Touch plankton to refill them.`
   - P and Escape do nothing after the :RunEnd:.
 
 - Each :Level: holds 3 :PlanktonCloud: items, placed from the :RunSeed:; touching one adds 15 to :Pulses:, up to its start for the :Level:, and uses the :PlanktonCloud: up.

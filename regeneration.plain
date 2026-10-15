@@ -11,7 +11,12 @@ description: Regeneration - the end of a run, the score, name entry and the top-
 
 - :Score: is the points a :Run: has earned so far, a whole number from 0.
 
-- :ScoreEntry: is one finished :Run: on the scoreboard: a name, its final :Score:, the :Depth: it ended in, and the local date it ended on.
+- :RunTime: is the whole seconds of a :Run: from its start to its :RunEnd:, time as a :Polyp: included and time paused or on an :UpgradeChoice: left out, shown as `<m>:<ss>`.
+
+- :ScoreEntry: is one finished :Run: on the scoreboard: a name, its final :Score:, the :Depth: it ended in, its :RunTime:, and the local date it ended on.
+  - A :ScoreEntry: saved before :RunTime: was kept has none.
+
+- :ScoreRule: is the line `Score: 100 per gene fragment, 50 per predator purified, and at each rift up to 1000 × its depth, 10 less for every second spent there, never under 100 × its depth.`
 
 - :Scoreboard: is the list of at most 10 :ScoreEntry: items kept in this browser, highest :Score: first.
   - Equal :Score: items are ordered by deeper :Depth: first, then by the earlier :ScoreEntry: first.
@@ -24,12 +29,14 @@ description: Regeneration - the end of a run, the score, name entry and the top-
 
 ***functional specs***
 
-- :Score: grows by 100 for each :GeneFragment: collected, by 50 for each :Predator: purified, and, on entering an open :Rift:, by `500 × :Depth:` of the :Level: left plus 10 for each whole :Pulses: left.
-  - Entering the :Rift: of :Depth: 1 with 37.6 :Pulses: left adds `500 + 370`.
+- :Score: grows by 100 for each :GeneFragment: collected, by 50 for each :Predator: purified, and, on entering an open :Rift:, by `max(100, 1000 - 10 × <s>) × :Depth:` of the :Level: left, where `<s>` is the whole seconds the :Run: spent in that :Level:.
+  - The seconds count from the start of the :Level: to entering its :Rift:, time as a :Polyp: included and time paused or on an :UpgradeChoice: left out.
+  - Entering the :Rift: of :Depth: 1 after 37.6 s adds `1000 - 370`; entering the :Rift: of :Depth: 2 after 95 s or more adds `100 × 2`.
+  - :Hud: shows `Time <s>s`, the whole seconds spent in the :Level: so far.
   - :Hud: shows `Score <n>`, updated as it grows.
   - :StateSnapshot: adds `score`.
 
-- 1.5 s after the :RunEnd: of a :Run: whose :Score: is :TopTen:, :RegenerationScreen: shows the heading `Regeneration`, `Score <n>`, `Depth <n>`, a text field labelled `Name` with the focus, and a `Save` button.
+- 1.5 s after the :RunEnd: of a :Run: whose :Score: is :TopTen:, :RegenerationScreen: shows the heading `Regeneration`, `Score <n>`, `Depth <n> in <:RunTime:>`, :ScoreRule:, a text field labelled `Name` with the focus, and a `Save` button.
   - The `Name` field starts with the last name saved in this browser, or empty.
   - Enter in the field, or `Save`, adds the :ScoreEntry: to the :Scoreboard: with the name trimmed, and opens :ScoreboardPage:.
   - A trimmed name of 0 or more than 12 characters is not saved; `Enter a name of 1 to 12 characters` is shown beside the field.
@@ -38,16 +45,18 @@ description: Regeneration - the end of a run, the score, name entry and the top-
   - The 1.5 s do not run while the page is hidden.
   - P and Escape do nothing on :RegenerationScreen:.
   - At its top, above `Regeneration`, :RegenerationScreen: shows the heading and the line of the :RunEnd: reason, as :DivePage: showed them, and nothing of :DivePage:'s own reason text stays visible behind it.
+  - For the reason `eaten`, the only one a :Run: ends with, these are the heading `Eaten by a sunfish` and the line `It swallowed you at depth <n>. A sting stuns a sunfish for 1.5 s.`; `The tide takes you` is never shown.
 
-- :ScoreboardPage: shows the heading `Scoreboard` and a table of the :Scoreboard: with the columns `Rank`, `Name`, `Score`, `Depth` and `Date`, and the buttons `Dive again`, which has the focus, and `Title`.
+- :ScoreboardPage: shows the heading `Scoreboard` and a table of the :Scoreboard: with the columns `Rank`, `Name`, `Score`, `Depth`, `Time` and `Date`, :ScoreRule: below it, and the buttons `Dive again`, which has the focus, and `Title`.
   - `Date` is the local date as `YYYY-MM-DD`.
+  - `Time` is the :RunTime: of the :ScoreEntry:, or `–` for one that has none.
   - An empty :Scoreboard: shows `No runs yet` in place of the table.
   - Opened from :RegenerationScreen:, the row of the :ScoreEntry: just saved is highlighted and has `aria-current="true"`.
-  - 1.5 s after the :RunEnd: of a :Run: whose :Score: is not :TopTen:, :ScoreboardPage: opens with no row highlighted and shows, at its top above `Scoreboard`, the heading and the line of the :RunEnd: reason, as :DivePage: showed them, then `Score <n> at depth <d> - not in the top 10`.
+  - 1.5 s after the :RunEnd: of a :Run: whose :Score: is not :TopTen:, :ScoreboardPage: opens with no row highlighted and shows, at its top above `Scoreboard`, the heading and the line of the :RunEnd: reason, as :DivePage: showed them, then `Score <n> at depth <d> in <:RunTime:> - not in the top 10`.
   - `Dive again` opens :DivePage: with a new :Run:, and `Title` opens :TitleScreen:.
   - A `seed` URL parameter of the finished :Run: is not carried to the next one.
   - :TitleScreen: shows a `Scoreboard` button after `Dive`, which opens :ScoreboardPage:.
   - :ScoreboardPage: opened directly highlights no row.
 
-- :TitleScreen: shows the controls below its buttons: `Swim: arrow keys or WASD`, `Sting: Space`, `Dash: Shift`, `Pause: P or Esc`.
+- :TitleScreen: shows the controls below its buttons: `Swim: Up/Down or W/S`, `Turn: Left/Right or A/D`, `Sting: Space`, `Dash: Shift`, `Pause: P or Esc`.
   - Arrow Up and Arrow Down move the focus between the :TitleScreen: buttons, and so on :PauseMenu: and :ScoreboardPage:.
