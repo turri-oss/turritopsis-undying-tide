@@ -1,0 +1,57 @@
+---
+import:
+  - undying-tide-base
+  - undying-tide-presentation
+  - undying-tide-creatures
+requires:
+  - regeneration
+  - upgrade-visuals
+description: Scenery - the seabed, background and small fish of each level, and the currents of the waves; the top module, holding the whole game.
+---
+
+***definitions***
+
+- :Scenery: is the landscape drawn in a :Level: - its seabed, its background and the small fish swimming in it - seen but never touched.
+
+***implementation reqs***
+
+- :Implementation: draws the :Scenery: of a :Level: in `src/game/render/scenery.ts`, as canvas paths, laid out by a hash of the :RunSeed: and the :Depth:, never by the :RunSeed: generator; the :Scenery: is not part of the simulation state or :StateSnapshot:.
+  - Every colour of the :Scenery: comes from the palette's `scenery` section, transcribed into `src/game/palette.ts` with the rest of the palette, at the opacities the palette notes.
+
+***functional specs***
+
+- Each :Level: is drawn with its :Scenery:, above its water and beneath every figure, the :Jellyfish: included, and like the rest of the :Level: covered by the darkness outside the :Glow:.
+  - No part of the :Scenery:, the vent halos included, shows through the darkness.
+  - The :Scenery: is only drawn: nothing collides with it, and it changes no position, timing, placement or score.
+  - No part of the :Scenery: is drawn inside the rectangle from `(0, 0)` to `(300, 290)` that :Hud: covers, or inside the control legend's rectangle from `(0, 580)` to `(260, 720)`.
+  - The same :RunSeed: and :Depth: always draw the same :Scenery:, and while `tick` stands still the :Scenery: stands still.
+  - While a :Level: is dived into, its :Scenery: is shifted with it; :RegenerationScreen: shows the :Scenery: of the :Level: as it stood at the :RunEnd:.
+  - The bands around the :Level: on :DivePage: show no :Scenery:.
+
+- The :Scenery: has a seabed along the bottom of the :Level:, from x 260 to 1280, its top an uneven line between y 610 and 640, its left end sloping down to the bottom edge at x 260; what grows on it follows the palette's water band of the :Depth:.
+  - Sunlit: sand in the palette's sand colour, 3 to 4 coral heads in its coral colour, and 5 to 7 kelp stalks in its kelp colour, 120 to 220 px tall.
+  - Twilight: sand giving way to rocks in the rock colour from left to right, 3 to 4 kelp stalks in the kelp-dark colour, 80 to 140 px tall, and 2 to 3 soft corals in the coral-soft colour.
+  - Midnight: sand-deep ground with ridges of rocks in the rock-dark colour, 1 to 2 soft corals, no kelp.
+  - Abyss: sand-deep ground with rock-dark rocks and 2 to 3 hydrothermal vents in the vent colour, each a chimney 40 to 70 px tall with a halo of radius 30 in the vent-glow colour whose opacity rises from 20% to 40% and back once every 3 s.
+  - Each kelp stalk sways: a wave running from its foot to its tip, 0 px across at the foot and 12 px at the tip, once every 4 to 6 s, each stalk at its own point of the cycle.
+  - Coral and rocks stand still.
+
+- Behind the seabed, the :Scenery: has a background of distant rock arches, rising bubbles and small fish, as many as the palette's water band of the :Depth: gives.
+  - Sunlit and twilight have 1 to 2 rock arches in the rock-far colour at 40% opacity, 120 to 200 px tall, standing on the seabed between x 320 and 1240; midnight and abyss have none.
+  - Bubbles of radius 1.5 to 4 px in the bubble colour at 30% opacity rise from the seabed, swaying up to 3 px to either side, and come back in at the seabed after leaving at the top: 10 at sunlit, 8 at twilight and 5 at midnight, rising at 20 to 40 px/s, 10 to 20 px/s at midnight; at abyss each vent gives off a plume of 6, rising at 25 to 45 px/s from its top.
+  - Every bubble rises at an x between 310 and 1270, so none crosses the rectangle :Hud: covers.
+  - Small fish 10 px long in the fish colour swim straight across the :Level: at 30 to 50 px/s, at a height between y 300 and 570, facing the way they swim, each coming back in at the side it left from after 4 to 8 s: 2 schools of 5 at sunlit, 1 school of 3 at twilight, 1 lone fish at midnight, none at abyss.
+
+- :TitleScreen: and the scoreboard page at `/scoreboard` show the :Scenery: of :Depth: 1 behind their content, over the sunlit water gradient, with no darkness and no figure of the :Level:.
+  - The 1280×720 :Level: is scaled to the window's width, its bottom edge on the window's bottom edge; the sunlit water continues above it to the top of the window, and a window wider than 16:9 shows the :Level: cut off at the top.
+  - It is laid out as for a :RunSeed: of 1, so both pages show the same :Scenery: every time they open.
+  - Its kelp sways, its bubbles rise and its fish swim as in a :Level:, timed apart from any :Run:.
+  - On :TitleScreen: the drifting motes are drawn over it; the scoreboard page gets no motes.
+  - The page content stays above it, and both pages still fit in the window without scrolling.
+
+- Each :Wave: is drawn as streaks of current flowing through its circle in its direction, above the :Scenery: and beneath every figure, and like the rest of the :Level: covered by the darkness outside the :Glow:.
+  - 14 streaks, each a rounded line 30 to 60 px long and 2 px wide in the palette's bubble colour, run along its direction at its strength, clipped to its circle, each coming back in at the far side after leaving.
+  - While it warns the streaks fade in from clear to 20% opacity over the 1 s; while it pushes they are at 50% opacity times its push over its strength, rising and falling with the push.
+  - Its edge is a soft ring 3 px wide in the bubble colour, fading in to 30% opacity over the warning and out over the last 0.5 s of the push.
+  - The streaks' lengths and starting places come from a hash of the streak's index alone, never from the :RunSeed: generator, so every :Wave: of a :Level: draws the same streaks.
+  - A :Wave: is only drawn: its figure touches nothing, and while `tick` stands still it stands still.

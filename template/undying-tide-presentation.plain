@@ -1,0 +1,19 @@
+---
+required_concepts: [":GeneFragment:", ":PlanktonCloud:", ":Hearts:", ":StateSnapshot:"]
+description: How every figure of the game is animated and drawn - the reqs every animation module shares.
+---
+
+***implementation reqs***
+
+- :Implementation: draws every animation of a :Run: in `src/game/render/`, timed by the simulation's `tick`, so animations stand still whenever `tick` does; no animation changes the simulation state, a collision circle or a timing.
+
+- The simulation keeps a list of the events animations are drawn for - a :GeneFragment: collected, a :PlanktonCloud: used, one of the :Hearts: lost, a :Predator: purified, a :Rift: opened, a :Level: started - each with its kind, position, the figure it concerns and its `tick`, and drops each one 1 s after it happened; the list is not part of :StateSnapshot:.
+
+- :Implementation: bundles the Nunito font through the `@fontsource/nunito` npm package, weights 400, 600 and 800, imported once in `src/main.tsx`, never from a network font service.
+  - The canvas draws a :Run:'s first frame only after `document.fonts.load` of Nunito resolves.
+  - Every `ctx.font` names `Nunito` first, with `sans-serif` as the fallback.
+
+- :Implementation: runs served from any base path, such as `/turritopsis-undying-tide/` on GitHub Pages.
+  - Vite's `base` is read from the `BASE_PATH` environment variable at build time, `/` when it is unset.
+  - The router's `basename` is `import.meta.env.BASE_URL`, and every link, navigation and asset URL is relative to it.
+  - `npm run build` also writes `dist/404.html`, a copy of `dist/index.html`, so reloading `/dive` or `/scoreboard` under the base path opens the game.

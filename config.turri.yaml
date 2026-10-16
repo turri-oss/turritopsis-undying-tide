@@ -60,7 +60,7 @@ conformance-tests-script: test_scripts/run_conformance_tests_typescript.sh
 # prepare-environment-script: test_scripts/prepare_environment_python.sh
 
 # Optional: the .plain file turri regenerate builds when none is named.
-module: regeneration.plain
+module: scenery.plain
 
 # Optional, under conformance-tests: chosen or module: how many functional specs of a module may be chosen - a count or a share.
 # Without it, any number.

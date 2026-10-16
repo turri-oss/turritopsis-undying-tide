@@ -1,0 +1,56 @@
+---
+import:
+  - undying-tide-base
+  - undying-tide-presentation
+  - undying-tide-creatures
+requires:
+  - jellyfish-figure
+description: Creature figures - the predators, gene fragments, plankton and the rift move as they live.
+---
+
+***implementation reqs***
+
+- The twinkle of each :PlanktonCloud: speck is timed by a hash of the cloud's index, the speck's index and `tick`, never by the :RunSeed: generator.
+
+- The shimmer band of :CombJelly:, :FlickerJelly: and :SplitJelly: is drawn with the canvas `lighter` composite operation.
+
+***functional specs***
+
+- Every :CombJelly:, :FlickerJelly: and :SplitJelly: shimmers: a band of light a quarter of its diameter tall sweeps down its figure from top to bottom once every 0.8 s, clipped to its circle.
+  - The band is the palette's comb-jelly colour at 60% opacity, added to the figure's colours so it brightens them.
+  - Each one starts its sweep at a point of the cycle drawn from its `id`, so no two are in step.
+
+- A :SplitJelly: figure swells to 105% of its drawn size and back once every 1 s, about its centre.
+  - Its circle stays radius 26.
+
+- Each anchovy of an :AnchovySchool: flicks its tail: its figure turns 10° to either side of its heading and back, 4 times a second, about its head.
+  - The anchovies of a school flick out of step, each one an eighth of the cycle behind the one before it.
+  - The figure faces the way the :AnchovySchool: sweeps.
+
+- An :ArrowWorm: wriggles while it lunges: its figure, faced along the lunge, is drawn in 4 strips from head to tail, each shifted sideways by a wave of 3 px that runs from head to tail 5 times a second.
+  - In every other phase it is drawn straight, its quiver while aiming unchanged.
+  - Its circle stays radius 14.
+
+- A :StingingJelly: bell pulses, narrowing to 90% of its width and lengthening to 110% of its height and back once every 1.0 s, and its tentacle segments sway.
+  - Each segment is drawn shifted up to 4 px across the line of the tentacles, in a wave that runs from the bell to the last segment once every 1.5 s.
+  - Its bell and segment circles stay where they are, and their radii unchanged.
+
+- Each :GeneFragment: not yet collected bobs and glows: its figure is drawn up to 3 px above and below its position, once every 2 s, inside a halo of radius 20 in the palette's gene-fragment colour whose opacity rises from 30% to 70% and falls back on the same cycle.
+  - Each :GeneFragment: of a :Level: is a sixth of the cycle behind the one before it.
+  - Its circle stays at its position, radius 12.
+
+- Each :PlanktonCloud: not yet used drifts and twinkles: its figure is drawn moving round a circle of 4 px about its position once every 5 s, with 6 specks of radius 1.5 px in the palette's plankton colour inside its circle.
+  - Each speck lights up and fades out over 0.4 s, at moments that look random, at least once every 2 s.
+  - The same `tick` always draws the same specks, and the twinkle changes no :RunSeed: draw.
+  - Its circle stays at its position, radius 30.
+
+- The :Rift: figure swirls about its centre: one turn every 8 s while closed, one turn every 2 s while open.
+  - An open :Rift: has a halo of radius 56 in the palette's open-rift colour, its opacity rising from 30% to 60% and back once every 1.2 s.
+  - When the :Rift: opens, its figure grows from 60% to its full size over 0.6 s, and a ring in the open-rift colour widens from 40 px to 80 px and fades out over the same 0.6 s.
+  - Its circle stays radius 40, and it can be entered from the tick it opens.
+
+- No :Predator: figure has a face: no eyes, no mouth, no smile, and no mark that reads as one.
+  - :CombJelly:, :FlickerJelly:, :SplitJelly: and :StingingJelly: are translucent bodies with comb rows or inner canals; the lines below them trail straight down from the body and never curve into a mouth.
+  - No :StingingJelly: tentacle segment has an eye dot.
+  - Each anchovy of an :AnchovySchool:, the :ArrowWorm: and the :Sunfish: keep their body shape, fins and tail, with no eye dot.
+  - Each figure keeps its Drift outline, its palette colours, its drawn size and its circle, and every animation above moves it as before.

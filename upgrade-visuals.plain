@@ -1,0 +1,54 @@
+---
+import:
+  - undying-tide-base
+  - undying-tide-presentation
+  - undying-tide-creatures
+requires:
+  - presentation
+description: Upgrade visuals - the upgrade choice cards, the HUD upgrade icons and the look of each upgrade.
+---
+
+***implementation reqs***
+
+- :Implementation: draws the icon of each :Upgrade: kind from its own SVG file, `src/game/art/upgrade-<id>.svg`, used both on the :UpgradeChoice: and in :Hud:.
+
+***functional specs***
+
+- :UpgradeChoice: sits on a panel in the palette's HUD panel colour at 80% opacity, over the :Level: under the palette's darkness overlay at 50% opacity, its texts set as on :PauseMenu:, `Depth <n> cleared` as secondary text.
+  - Each button is a card 220 px wide with its :Upgrade: icon, 48 px, above its name, its level line in the HUD text-secondary colour, and its line of what it gives.
+  - A card is outlined 1 px in the HUD text-secondary colour; the focused one 3 px in the pulse-bar colour and drawn 6 px higher.
+  - The three cards and the panel fit in any window of at least 1024×600.
+
+- :Hud: shows a row of the icons of the :Upgrade: kinds taken, 20 px each, below the hearts, in the order first taken.
+  - Beside each icon but Stinging tentacles stands its level in Roman numerals, `I`, `II` or `III`, in the HUD text colour.
+  - The row is not shown while no :Upgrade: is taken.
+  - :Hud: stays within the rectangle from `(0, 0)` to `(300, 290)`, with 6 hearts and all seven kinds taken.
+  - Every text line of :Hud: lies wholly inside its panel, with the panel's padding on both sides: the panel is as wide as its longest line needs, `Out of pulses - regenerating` included, and at least as wide as it is now, still within that rectangle.
+
+- With Stinging tentacles, each :Jellyfish: tentacle carries 5 barbs, short strokes 4 px long in the palette's sting colour, evenly spread from rim to tip, moving with the tentacle.
+  - The barbs of a tentacle glint, brightening to full and back over 0.2 s once every 1 s, each tentacle at its own point of the cycle.
+  - They are only drawn, and touch nothing.
+
+- With Extra heart, the core of the :Jellyfish: figure is drawn 10% larger a level, about its own centre, inside a glow of radius 1.5 times the core's in the palette's heart colour at 30% opacity.
+  - The :Jellyfish: circle stays radius 24.
+
+- With Quick regeneration, a shimmer in the palette's plankton colour runs round the rim of the :Jellyfish: bell: an arc a quarter of the rim long, at 50% opacity, going round once every 2, 1.5 or 1 s at level 1, 2 or 3.
+  - The halo of the polyp figure is drawn in the plankton colour in place of the player core colour, its opacity cycle unchanged.
+  - The shimmer follows the bell's pulse.
+
+- With Hard bell, the rim of the :Jellyfish: bell is drawn over as a stroke in the palette's bell-rim colour, 1, 2.5 or 4 px wide and at 50%, 70% or 90% opacity at level 1, 2 or 3, following the bell's pulse.
+  - The :Jellyfish: circle stays radius 24.
+
+- With Wide sting, a ring 1 px wide in the palette's sting colour at 10% opacity is drawn round the :Jellyfish: centre at the reach of the :Sting:, while the :Jellyfish: is not a :Polyp:.
+  - It is drawn beneath every figure and above the water.
+
+- With Fragment magnet, 1, 2 or 3 motes of radius 2 px in the palette's gene-fragment colour circle the :Jellyfish: centre 34 px out, once every 3 s, evenly spread, at level 1, 2 or 3.
+  - A :GeneFragment: moving towards the :Jellyfish: leaves a trail of sparks of radius 1.5 px in the gene-fragment colour, one every 0.1 s where it was, each fading out over 0.3 s.
+  - Motes and sparks are only drawn.
+
+- When a :Level: starts after an :Upgrade: is taken, the :Jellyfish: figure flashes once: a disc of radius 32 in the palette's HUD text colour is drawn over it, fading from 70% opacity to clear over 0.4 s.
+
+- With Longer tentacles, every :Jellyfish: tentacle is drawn 1.25, 1.5 or 1.75 times its length at level 1, 2 or 3.
+  - Its sway at the tip and its tip's draw towards the bell's centre line grow by the same factor; its sway timing, lag and taper from 3 px to 1 px stay as they are.
+  - With Stinging tentacles too, its 5 barbs stay evenly spread from rim to the new tip.
+  - The tentacles are only drawn, and touch nothing.

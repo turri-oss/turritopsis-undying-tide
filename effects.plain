@@ -1,0 +1,46 @@
+---
+import:
+  - undying-tide-base
+  - undying-tide-presentation
+  - undying-tide-creatures
+requires:
+  - regeneration
+  - creature-figures
+description: Effects - every event of a run is seen as it happens, and the pages drift.
+---
+
+***implementation reqs***
+
+- :Implementation: draws the moving background of :TitleScreen:, :RegenerationScreen: and the scoreboard page on a canvas behind the page content, timed by `requestAnimationFrame`, apart from the game loop.
+
+***functional specs***
+
+- Collecting a :GeneFragment: or using up a :PlanktonCloud: shows a burst where it lay.
+  - A :GeneFragment: throws out 8 sparks of radius 2 px in the palette's gene-fragment colour, evenly spread, flying 30 px out and fading over 0.4 s.
+  - A :PlanktonCloud: throws out 10 specks of radius 1.5 px in the palette's plankton colour, evenly spread, flying 40 px out and fading over 0.5 s.
+
+- Losing one of the :Hearts: shows the loss: the heart going from :Hud: grows to 150% and fades out over 0.5 s where it stood, and a ring in the palette's heart colour widens from 24 px to 48 px around the :Jellyfish: and fades out over 0.3 s.
+  - The :Invulnerability: blink is unchanged.
+
+- A purified :Predator: dissolves: its figure stays drawn where it was purified, growing to 130% of its size and fading out over 0.5 s, while 6 specks in the palette's sting colour rise 20 px from it and fade.
+  - A purified :StingingJelly: dissolves with its tentacle segments, each growing to 130% about its own centre and fading out with the bell.
+  - Each anchovy of a purified :AnchovySchool: dissolves where it was.
+  - A dissolving figure cannot touch the :Jellyfish: and is not in :StateSnapshot:.
+  - A :SplitJelly: that splits does not dissolve.
+
+- Each :Level: after the first is dived into: for 0.8 s from its start it is drawn shifted 120 px down, rising to its place, under the palette's darkness overlay fading from fully opaque to clear.
+  - :Hud: is drawn above it, unshifted.
+  - The :Level: plays as usual during the 0.8 s.
+
+- :TitleScreen: and :RegenerationScreen: have a drifting background: 12 motes of radius 2 to 5 px in the palette's bell colour at 25% opacity rise at 15 to 30 px/s, swaying up to 10 px to either side of their line, and come back in at the bottom after leaving at the top.
+  - :TitleScreen: draws them over the sunlit water gradient of the palette.
+  - :RegenerationScreen: draws them over the :Level: as it stood at the :RunEnd:.
+  - Their sizes, speeds and starting places are the same every time the screen opens.
+
+- The :Jellyfish: shrinks into its :Polyp: and unfurls out of it: over the first 0.4 s of the :Polyp: stage, the :Jellyfish: figure, tentacles with it, shrinks to 40% and fades out while the polyp figure grows from 40% to its full size and fades in; over the last 0.4 s the same is played backwards.
+  - Both figures scale about the :Jellyfish: centre.
+  - Between the two, only the polyp figure is drawn, at its full size but for its pulse.
+  - The :Jellyfish: does not pulse while it is a :Polyp:.
+  - The polyp figure pulses while a :Polyp:, from the end of its growing until its shrinking starts: it swells to 112% of its full size and back once every 0.8 s, about the :Jellyfish: centre, inside a halo of radius 36 in the palette's player core colour whose opacity rises from 15% to 45% and falls back on the same cycle.
+  - The :Polyp: circle stays radius 24 throughout.
+  - The polyp figure has no sharp corners: its stalk is a rounded column, its top end hidden under the bell and its foot a rounded base, and every outline of the figure is a smooth curve.

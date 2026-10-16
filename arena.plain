@@ -1,0 +1,23 @@
+---
+import:
+  - undying-tide-base
+  - undying-tide-creatures
+requires:
+  - upgrades
+description: Arena - the predators in the level, kept clear of the HUD and pushed by waves.
+---
+
+***functional specs***
+
+- No :GeneFragment:, :PlanktonCloud:, :Rift: or :Predator: is placed with any part of its circle inside the rectangle from `(0, 0)` to `(300, 290)` of the :Level:, the area :Hud: covers.
+  - For a :StingingJelly: this holds for its bell and every tentacle segment; an :AnchovySchool:, placed off-screen, swims in as before.
+  - Once placed, a :Predator: or a moving :GeneFragment: may move into the rectangle, as may the :Jellyfish:.
+  - Every other placement rule still holds, and the same :RunSeed: still gives the same placements.
+
+- A pushing :Wave: pushes every :Predator: whose circle overlaps it along its direction at its push, on top of the :Predator:'s own movement, as it pushes the :Jellyfish:.
+  - A :StingingJelly: is pushed when its bell overlaps the :Wave:, its tentacle segments trailing as before; an :AnchovySchool: is pushed whole when any anchovy overlaps it.
+  - A :FlickerJelly: out of the :Level: is not pushed.
+  - Every rule that keeps a :Predator: within the :Level: still holds; an :AnchovySchool: pushed out of the :Level: counts as having wholly left it.
+  - The push does not change where a :Predator: aims or heads: an :ArrowWorm:'s aimed point and a wanderer's picked point stay as they were.
+  - The :Jellyfish: is pushed during a :Dash: too; a :Polyp: is not moved.
+  - A :Wave: and its timers stand still while an :UpgradeChoice: is shown.

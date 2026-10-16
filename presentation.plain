@@ -1,0 +1,54 @@
+---
+import:
+  - undying-tide-base
+  - undying-tide-presentation
+  - undying-tide-creatures
+requires:
+  - regeneration
+  - effects
+description: Presentation - fonts, the control legend, the window layout, the title footer and the goal.
+---
+
+***implementation reqs***
+
+- :Implementation: sets every colour of `src/game/palette.ts` that the pages use as a CSS custom property on the document root once at startup, so every page and overlay, :PauseMenu: and :RegenerationScreen: included, reads the same variables.
+
+***functional specs***
+
+- Every text of the game - on :TitleScreen:, :PauseMenu:, :RegenerationScreen:, the scoreboard page at `/scoreboard`, :DivePage: and in :Hud: - is set in Nunito, with `sans-serif` as the fallback.
+  - Headings are weight 800, buttons and :Hud: labels 600, every other text 400.
+  - Every heading, label and button text is in the palette's HUD text colour, secondary text in its HUD text-secondary colour; none is in the browser's default black.
+  - Secondary text is the controls list of :TitleScreen:, the notes of the scoreboard page, and the line under the :RunEnd: reason heading.
+  - :PauseMenu: and :RegenerationScreen: sit on a panel in the palette's HUD panel colour at 80% opacity.
+  - Every button of the game - `Dive`, `Scoreboard`, `Resume` and every other, on every page and overlay - has a transparent background and is outlined in the palette's pulse-bar colour; no button is filled with a colour.
+    - The upgrade cards of the upgrade choice are the one exception to the outline: they keep their own 1 px outline in the HUD text-secondary colour, with a transparent background.
+
+- During a :Run:, a control legend is drawn on the canvas at the bottom left of the :Level:, 16 px from its left and bottom edges, in 5 lines: `Swim: Up or W`, `Turn: Left/Right or A/D`, `Sting: Space`, `Dash: Shift`, `Pause: P or Esc`.
+  - Its text is Nunito 14 px, weight 400: each action label, up to and including the colon, in the palette's HUD text-secondary colour, and the keys after it in the HUD text colour.
+  - It sits on a panel in the palette's HUD panel colour at 80% opacity.
+  - Like :Hud:, it is drawn above the darkness and unshifted while a :Level: is dived into.
+  - It is only drawn: nothing in the :Level: collides with it.
+  - Nothing is placed under the control legend: no :GeneFragment:, :PlanktonCloud:, :Rift: or :Predator: is placed with any part of its circle inside the rectangle from `(0, 580)` to `(260, 720)`, as none is inside the rectangle :Hud: covers.
+    - For a :StingingJelly: this holds for its bell and every tentacle segment; an :AnchovySchool:, placed off-screen, swims in as before.
+    - Once placed, a :Predator: or a moving :GeneFragment: may move into the rectangle, as may the :Jellyfish:.
+    - Every other placement rule still holds, and the same :RunSeed: still gives the same placements.
+
+- Every page - :TitleScreen:, :DivePage: and the scoreboard page at `/scoreboard` - fills the browser window exactly, with no page margin and no scrollbar, in any window of at least 1024×600.
+  - :DivePage: draws its canvas over the whole window; the 1280×720 :Level: is scaled to fit inside it and centred, as before, and the ocean continues into the bands around it.
+    - The bands show the water gradient of the :Level:'s :Depth: band, running from the top of the window to its bottom, under the palette's darkness overlay wherever they lie outside the :Glow:, as the :Level: does.
+    - While a :Level: is dived into, the bands take the same darkness overlay fading from fully opaque to clear, unshifted.
+    - The bands are only drawn: the :Jellyfish: and every figure stay inside the :Level:, and :Hud: and the control legend keep their places in the :Level:.
+    - No part of the window shows a plain black page background.
+  - The scoreboard page with 10 rows, the :RunEnd: reason lines above them and its buttons fits in the window without scrolling, shrinking its table text if it must.
+
+- :TitleScreen: shows a footer at the bottom of the page, `Powered by ***plain and turri · Source`, where `***plain` links to `https://plainlang.org/docs/`, `turri` to `https://github.com/turri-oss/turri`, and `Source` to `https://github.com/turri-oss/turritopsis-undying-tide`.
+  - Each link opens in a new tab, with `target="_blank"` and `rel="noopener"`.
+  - Tab reaches the links after the :TitleScreen: buttons; Arrow Up and Arrow Down still move the focus between the buttons only.
+  - The footer text is in the palette's HUD text-secondary colour, its links in the HUD text colour, underlined.
+  - `***plain` is shown as written, with its three asterisks.
+  - :TitleScreen: with the footer still fits in the window without scrolling.
+
+- :TitleScreen: shows the goal of the game between its heading and its `Dive` button, in 3 lines: `Dive as deep as you can.`, `Collect every gene fragment to open the Rift to the next depth.` and `Be quick - the faster you reach each Rift, the higher your score.`
+  - The first line is 22 px, weight 600, in the palette's HUD text colour; the other two are 16 px secondary text.
+  - :TitleScreen: with the goal still fits in the window without scrolling.
+  - The line beginning `Score:` that explains the score, on :RegenerationScreen: and the scoreboard page, is 14 px secondary text, at most 640 px wide, wrapping.

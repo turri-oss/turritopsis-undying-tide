@@ -1,0 +1,28 @@
+---
+required_concepts: [":Predator:", ":Jellyfish:", ":Level:", ":Run:", ":DivePage:", ":Rift:", ":Depth:"]
+description: The predator kinds, the polyp and the upgrades - the concepts every module from predators up shares.
+---
+
+***definitions***
+
+- :CombJelly: is a glowing comb jelly :Predator:, a circle of radius 20, that slowly follows the :Jellyfish:.
+
+- :AnchovySchool: is a :Predator: made of 8 anchovies, each a circle of radius 8, swimming together in a band across the :Level:.
+
+- :ArrowWorm: is a :Predator:, a circle of radius 14, that lies in wait and lunges at the :Jellyfish:.
+
+- :StingingJelly: is a larger jellyfish :Predator: with a bell, a circle of radius 36, and 4 trailing tentacle segments, each a circle of radius 10.
+
+- :FlickerJelly: is a :CombJelly: twisted by the Drift that blinks out of the :Level: and back in.
+
+- :SplitJelly: is a :CombJelly: swollen by the Drift, a circle of radius 26, that splits in two when stung.
+
+- :Polyp: is the stage the :Jellyfish: turns into on losing its last heart, rooted where it stands until it regenerates; its circle stays radius 24.
+
+- :Sunfish: is a huge ocean sunfish :Predator:, a circle of radius 70, that eats the :Jellyfish:.
+
+- :Upgrade: is a lasting improvement of the :Jellyfish: for the rest of a :Run:, one of seven kinds, each with an `id`: Stinging tentacles (`stingingTentacles`), Extra heart (`extraHeart`), Quick regeneration (`quickRegeneration`), Hard bell (`hardBell`), Wide sting (`wideSting`), Fragment magnet (`fragmentMagnet`) and Longer tentacles (`longerTentacles`).
+  - A :Run: starts with no :Upgrade:.
+  - Stinging tentacles can be taken once; every other kind has levels 1 to 3, one more each time it is taken.
+
+- :UpgradeChoice: is the screen shown over the :Level: of :DivePage: between entering an open :Rift: and the start of the next :Level:, on which the player takes one :Upgrade:.

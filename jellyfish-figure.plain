@@ -1,0 +1,46 @@
+---
+import:
+  - undying-tide-base
+  - undying-tide-presentation
+  - undying-tide-creatures
+requires:
+  - regeneration
+description: Jellyfish figure - the jellyfish bell pulses, its tentacles sway and stream, and its bell turns to its heading.
+---
+
+***implementation reqs***
+
+- :Implementation: draws the :Jellyfish: tentacles as canvas strokes, so `src/game/art/jellyfish.svg` holds only its bell and core.
+
+***functional specs***
+
+- The :Jellyfish: figure pulses: its bell narrows to 82% of its width and lengthens to 118% of its height, then relaxes out past its drawn size to 108% of its width and 94% of its height and settles back to its drawn size, once every 1.2 s, and once every 0.8 s while it swims or turns: while Arrow Up, W, Arrow Left, A, Arrow Right or D is held.
+  - Left and Right held together count as neither held.
+  - While it swims or turns, each contraction starts with a stroke of the :Jellyfish:, the gentle strokes of a turn included; a stroke that starts mid-pulse takes the bell into its contraction from where it stands, without a jump.
+  - The figure pulses about its centre; the :Jellyfish: circle stays radius 24.
+
+- The :Jellyfish: has 8 wavy tentacles in the palette's player tentacles colour, hanging from the lower rim of its bell, spread evenly along it, each moving on its own.
+  - From left to right they are 54, 60, 64, 68, 66, 62, 58 and 52 px long, sway once every 3.0, 3.6, 4.1, 3.3, 3.9, 4.4, 3.5 and 3.8 s, and start 0, 0.55, 0.3, 0.8, 0.15, 0.65, 0.4 and 0.9 of a cycle into their sway.
+  - Each sway is a wave running from the rim to the tip: 0 px across at the rim, growing to 28, 34, 26, 30, 36, 28, 34 and 30 px at the tip, the tip a whole cycle behind the rim, so each tentacle holds one full wave along its length.
+  - Each contraction of the bell's pulse draws every tip up to 12 px in towards the bell's centre line, and they spread back as the bell relaxes.
+  - A tentacle is a smooth curve through at least 8 points, tapering from 3 px wide at the rim to 1 px at the tip.
+  - Its bend follows a change of the :Jellyfish: velocity with a lag growing along it, reaching the tip 0.8 s after the rim, so the tips keep drifting the old way after it turns or stops.
+  - At rest they hang straight out of the lower rim, away from the bell's top; while it moves they bend from that line to stream out opposite its velocity, more the faster it moves, fully behind it at 240 px/s and above.
+  - When it stops, they swing back to hanging straight out of the lower rim over 1.5 s, easing out, never in one step.
+  - They are drawn beneath the bell, the 4 inner ones over the 4 outer ones.
+
+- The :Jellyfish: bell is drawn turned to its :Heading:, its top facing along it, turning as its :Heading: turns and holding its angle while it does not.
+  - The bell's pulse, its core and every mark drawn on it turn with it, and the tentacles hang from its lower rim as turned, keeping their sway, lag and streaming opposite the velocity.
+  - The line the tentacles hang along at rest, and bend from while it moves, turns with the bell: it runs out of the lower rim away from the bell's top as turned, never towards the bottom of the screen while the bell is turned, so no tentacle crosses the bell.
+  - Once it has stopped, the tentacles swing back to that line as the bell holds its angle, hanging straight down only when the bell is upright.
+  - The bell is drawn at the :Heading: alone: the :Jellyfish: circle stays as it is, and the tentacles at rest hang straight out opposite the :Heading:.
+
+- The :Jellyfish: bell is a frilled dome, 40 px wide at its widest and 46 px tall from its top to its lower rim, centred on the :Jellyfish: centre, as drawn before its pulse.
+  - The dome is rounded at the top; its sides widen to their widest 8 px above the lower rim, then curve in to the lower rim, 34 px across.
+  - The lower rim is 8 equal scallops, each curving 3 px down between its ends; the tentacles hang one from the lowest point of each.
+    - Each tentacle starts at its scallop's lowest point, 23 px below the :Jellyfish: centre with the bell upright, and stays there as the bell pulses and turns; no tentacle starts inside the bell or on the straight edge of the half-disc bell it replaces.
+    - Every mark drawn along the bell's rim follows this outline, never the half-disc it replaces.
+  - The rim of the bell is its whole outline, dome and lower rim, stroked 1.5 px in the palette's bell-rim colour; inside it the bell is filled in the palette's bell colour at 30% opacity.
+  - 4 radial lines fan out from 6 px below the top to the lower rim, 1 px wide in the bell-rim colour at 40% opacity.
+  - The core, a circle of radius 7 in the palette's core colour with its core-highlight, sits on the bell's centre line 15 px below its top, drawn over the fill and the radial lines.
+  - The :Jellyfish: circle stays radius 24.

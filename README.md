@@ -6,7 +6,7 @@ This repository holds the game's ***plain specs, not its code. The code (React 1
 
 ## Layout
 
-- `ocean.plain` → `depths.plain` → `predators.plain` → `regeneration.plain` → `animation.plain` - the modules, each built on the one before; `animation` is the top module and holds the whole game.
+- `ocean.plain` → `depths.plain` → `predators.plain` → `bestiary.plain` → `upgrades.plain` → `arena.plain` → `regeneration.plain` → `jellyfish-figure.plain` → `creature-figures.plain` → `effects.plain` → `presentation.plain` → `upgrade-visuals.plain` → `scenery.plain` - the modules, each built on the one before; `scenery` is the top module and holds the whole game.
 - `template/` - the shared stack, architecture, test reqs and concepts.
 - `resources/color_pallete.yaml` - the colour palette.
 - `test_scripts/` - the unit and conformance test runners.
@@ -14,8 +14,8 @@ This repository holds the game's ***plain specs, not its code. The code (React 1
 
 ## Build and play
 
-With turri in this folder, regenerate `animation.plain`, then release it; the game runs with `npm run dev` from the released folder.
+With turri in this folder, regenerate `scenery.plain`, then release it; the game runs with `npm run dev` from the released folder.
 
 ## Controls
 
-Swim: arrow keys or WASD · Sting: Space · Dash: Shift · Pause: P or Esc
+Swim: Up or W · Turn: Left/Right or A/D · Sting: Space · Dash: Shift · Pause: P or Esc
