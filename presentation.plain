@@ -52,3 +52,8 @@ description: Presentation - fonts, the control legend, the window layout, the ti
   - The first line is 22 px, weight 600, in the palette's HUD text colour; the other two are 16 px secondary text.
   - :TitleScreen: with the goal still fits in the window without scrolling.
   - The line beginning `Score:` that explains the score, on :RegenerationScreen: and the scoreboard page, is 14 px secondary text, at most 640 px wide, wrapping.
+
+- A build made with `BASE_PATH=/turritopsis-undying-tide/ npm run build` and served under `/turritopsis-undying-tide/` opens :TitleScreen: at `/turritopsis-undying-tide/`, with every script, stylesheet, font and figure loaded from under that path.
+  - :DivePage: is at `/turritopsis-undying-tide/dive` and the scoreboard page at `/turritopsis-undying-tide/scoreboard`; every link, button and navigation of the game stays under the path, and `seed=<integer>` works there as before.
+  - Opening or reloading either URL directly opens the same page as navigating to it, through `dist/404.html`, a copy of `dist/index.html` that the build writes.
+  - A build without `BASE_PATH` serves the game from `/` as before, and `npm run dev` opens :TitleScreen: at `http://localhost:5173/`.
