@@ -10,8 +10,8 @@ description: How every figure of the game is animated and drawn - the reqs every
 - The simulation keeps a list of the events animations are drawn for - a :GeneFragment: collected, a :PlanktonCloud: used, one of the :Hearts: lost, a :Predator: purified, a :Rift: opened, a :Level: started - each with its kind, position, the figure it concerns and its `tick`, and drops each one 1 s after it happened; the list is not part of :StateSnapshot:.
 
 - :Implementation: bundles the Nunito font through the `@fontsource/nunito` npm package, weights 400, 600 and 800, imported once in `src/main.tsx`, never from a network font service.
-  - The canvas draws a :Run:'s first frame only after `document.fonts.load` of Nunito resolves.
-  - Every `ctx.font` names `Nunito` first, with `sans-serif` as the fallback.
+  - The renderer draws a :Run:'s first frame only after `document.fonts.load` of Nunito resolves.
+  - Every `ctx.font` on the 2D HUD overlay canvas names `Nunito` first, with `sans-serif` as the fallback.
 
 - :Implementation: runs served from any base path, such as `/turritopsis-undying-tide/` on GitHub Pages.
   - Vite's `base` is read from the `BASE_PATH` environment variable at build time, `/` when it is unset.

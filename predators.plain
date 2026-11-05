@@ -7,58 +7,74 @@ requires:
 description: Predators - the first Drift-corrupted predator, hearts, the sting, the dash and the polyp.
 ---
 
+***implementation reqs***
+
+- :Implementation: builds each :CombJelly: in the Three.js scene as a translucent 3D ellipsoid mesh in the palette's comb-jelly colour with a Drift outline mesh in the drift colour, renders the :Sting: as an expanding 3D ring mesh in the sting colour, and renders the :Polyp: from `public/models/anemone.glb` tinted in the palette's player colours and sized to the :Polyp: circle.
+
 ***functional specs***
 
-- Each :Level: holds `1 + floor((:Depth: - 1) / 2)` :CombJelly: items, each swimming straight towards the :Jellyfish: centre at `50 × :PredatorPace:` px/s.
-  - A :CombJelly: never leaves the :Level:.
-  - A :CombJelly: stands still while the :Run: is paused and after the :RunEnd:.
-  - :StateSnapshot: adds `predators`, the list of every :Predator: in the :Level:, each with `id` (unique in the :Run:), `kind` (`combJelly` here), `x`, `y` and `radius`.
-  - The same :RunSeed: gives each :Depth: the same :Predator: starts.
+# comb-jellies
+Each :Level: holds `1 + floor((:Depth: - 1) / 2)` :CombJelly: items, each swimming straight towards the :Jellyfish: centre at `50 × :PredatorPace:` px/s.
+- A :CombJelly: never leaves the :Level:.
+- A :CombJelly: stands still while the :Run: is paused and after the :RunEnd:.
+- :StateSnapshot: adds `predators`, the list of every :Predator: in the :Level:, each with `id` (unique in the :Run:), `kind` (`combJelly` here), `x`, `y` and `radius`.
+- The same :RunSeed: gives each :Depth: the same :Predator: starts.
 
-- A :Predator: touching the :Jellyfish: takes one of its :Hearts:, and 2 s of :Invulnerability: follow, in which the :Jellyfish: blinks.
-  - A :Predator: touches the :Jellyfish: when their circles overlap.
-  - When several :Predator: items start touching the :Jellyfish: in the same moment, only one of its :Hearts: is taken.
-  - When :Hearts: reaches 0 the :Jellyfish: becomes a :Polyp:; losing hearts never brings the :RunEnd:.
-  - :Hearts: carry over from one :Level: to the next, and the time left of an :Invulnerability: does too.
-  - The :Invulnerability: clock does not run while the :Run: is paused.
-  - The :Predator: that touches the :Jellyfish: keeps swimming as before, and the :Jellyfish: can swim during the :Invulnerability:.
-  - A :Predator: touching the :Jellyfish: during an :Invulnerability: takes nothing; one still touching it when the :Invulnerability: ends takes another of its :Hearts:, each time one ends.
-  - :Hud: shows one heart in the palette's heart colour for each of the :Hearts:.
-  - :StateSnapshot: adds `hearts` and `invulnerableFor` (seconds left, 0 when none).
+# hearts-and-invulnerability
+A :Predator: touching the :Jellyfish: takes one of its :Hearts:, and 2 s of :Invulnerability: follow, in which the :Jellyfish: blinks.
+- A :Predator: touches the :Jellyfish: when their circles overlap.
+- When several :Predator: items start touching the :Jellyfish: in the same moment, only one of its :Hearts: is taken.
+- When :Hearts: reaches 0 the :Jellyfish: becomes a :Polyp:; losing hearts never brings the :RunEnd:.
+- :Hearts: carry over from one :Level: to the next, and the time left of an :Invulnerability: does too.
+- The :Invulnerability: clock does not run while the :Run: is paused.
+- The :Predator: that touches the :Jellyfish: keeps swimming as before, and the :Jellyfish: can swim during the :Invulnerability:.
+- A :Predator: touching the :Jellyfish: during an :Invulnerability: takes nothing; one still touching it when the :Invulnerability: ends takes another of its :Hearts:, each time one ends.
+- :Hud: shows one heart in the palette's heart colour for each of the :Hearts:.
+- :StateSnapshot: adds `hearts` and `invulnerableFor` (seconds left, 0 when none).
 
-- Space fires the :Sting:, which costs 3 :Pulses: and purifies every :Predator: whose circle it reaches; a purified :Predator: leaves the :Level:.
-  - The :Sting: reaches a :Predator: when the distance between their centres is at most `90 + ` the :Predator: radius.
-  - After a :Sting:, Space does nothing for 1 s; holding Space does not fire again.
-  - Each press of Space fires at most one :Sting:, on the update right after it or not at all; a press that cannot fire then is dropped, never kept for later.
-  - Space does nothing while :Pulses: is 3 or less.
-  - A :Sting: is drawn as a ring in the palette's sting colour, widening to 90 px over 1 s and fading out over its last 0.2 s; the ring is only drawn, and the :Sting: still purifies at the moment it is fired.
-  - Space does nothing while the :Run: is paused or after the :RunEnd:.
-  - :Hud: shows `Purified <n>`, the :Predator: items purified in the :Run: so far.
-  - :StateSnapshot: adds `purified` (the count for the :Run:) and `stingCooldown` (seconds left, 0 when ready).
+# sting
+E or Enter fires the :Sting:, which costs 3 :Pulses: and purifies every :Predator: whose circle it reaches; a purified :Predator: leaves the :Level:.
+- The :Sting: reaches a :Predator: when the distance between their centres is at most `90 + ` the :Predator: radius.
+- After a :Sting:, E and Enter do nothing for 1 s; holding E or Enter does not fire again.
+- Each press of E or Enter fires at most one :Sting:, on the update right after it or not at all; a press that cannot fire then is dropped, never kept for later.
+- E and Enter do nothing while :Pulses: is 3 or less.
+- A :Sting: is drawn as a 3D ring on the horizontal plane around the :Jellyfish: in the palette's sting colour, widening to 90 px over 1 s and fading out over its last 0.2 s; the ring is only drawn, and the :Sting: still purifies at the moment it is fired.
+- E and Enter do nothing while the :Run: is paused or after the :RunEnd:.
+- :Hud: shows `Purified <n>`, the :Predator: items purified in the :Run: so far.
+- :StateSnapshot: adds `purified` (the count for the :Run:) and `stingCooldown` (seconds left, 0 when ready).
 
-- Shift starts a :Dash:: for 0.25 s the :Jellyfish: swims at 720 px/s, and it has :Invulnerability: for as long.
-  - The :Dash: goes forward along the :Jellyfish: :Heading: while Arrow Up or W is held, else in the direction the :Jellyfish: is moving; it never goes backward.
-  - Shift does nothing when Up is not held and the :Jellyfish: is at rest.
-  - A :Dash: costs no :Pulses:, which run down at the swimming rate of 1 a second while it lasts.
-  - Shift does nothing for 2 s after a :Dash: starts; holding Shift does not dash again.
-  - A :Dash: ends early at an edge of the :Level:, and the :Jellyfish: leaves it at its top speed of 280 px/s.
-  - A :Dash: does not lengthen nor shorten an :Invulnerability: that was already running.
-  - A :Predator: still touching the :Jellyfish: when the :Invulnerability: of a :Dash: ends takes nothing; only the end of the :Invulnerability: that follows a hit takes another of its :Hearts:.
-  - The :Jellyfish: does not blink for the :Invulnerability: of a :Dash:; it blinks during a :Dash: only while the :Invulnerability: that follows a hit is running.
-  - :Hud: shows the :Dash: as ready, or as a filling ring while it waits.
-  - :StateSnapshot: adds `dashing` (boolean) and `dashCooldown` (seconds left, 0 when ready).
+# dash
+Shift starts a :Dash:: for 0.25 s the :Jellyfish: swims at 720 px/s, and it has :Invulnerability: for as long.
+- The :Dash: goes forward along the :Jellyfish: :Heading: while Space is held, else in the direction the :Jellyfish: is moving; it never goes backward.
+- Shift does nothing when Space is not held and the :Jellyfish: is at rest.
+- A :Dash: costs no :Pulses:, which run down at the swimming rate of 1 a second while it lasts.
+- Shift does nothing for 2 s after a :Dash: starts; holding Shift does not dash again.
+- A :Dash: ends early at an edge of the :Level:, and the :Jellyfish: leaves it at its top speed of 280 px/s.
+- A :Dash: does not lengthen nor shorten an :Invulnerability: that was already running.
+- A :Predator: still touching the :Jellyfish: when the :Invulnerability: of a :Dash: ends takes nothing; only the end of the :Invulnerability: that follows a hit takes another of its :Hearts:.
+- The :Jellyfish: does not blink for the :Invulnerability: of a :Dash:; it blinks during a :Dash: only while the :Invulnerability: that follows a hit is running.
+- :Hud: shows the :Dash: as ready, or as a filling ring while it waits.
+- :StateSnapshot: adds `dashing` (boolean) and `dashCooldown` (seconds left, 0 when ready).
 
-- A :Jellyfish: that loses its last heart is a :Polyp: for 3 s where it stands, then turns back into the :Jellyfish: there with its :Hearts: at 3 and its :Pulses: refilled to their start for the :Level:.
-  - It turns back upright, its :Heading: 0, whatever its :Heading: was.
-  - Its speed drops to 0 at once, and it does not move while a :Polyp:; direction keys, Shift and Space do nothing.
-  - :Pulses: does not run down while it is a :Polyp:.
-  - A :Jellyfish: whose :Pulses: reaches 0 becomes a :Polyp: in the same way; it turns back just as after losing its last heart, its :Hearts: at 3 and its :Pulses: refilled to their start for the :Level:.
-  - :Hud: shows `Out of pulses - regenerating` in place of `Regenerating` for a :Polyp: that came from running out of :Pulses:.
-  - A :Polyp: touching an open :Rift: enters it, as the :Jellyfish: does.
-  - It has :Invulnerability: for the 3 s, in place of the 2 s that follow a hit, and does not blink.
-  - The 3 s do not run while the :Run: is paused.
-  - It is drawn as the polyp figure in place of the :Jellyfish: figure.
-  - :Hud: shows `Regenerating` while it is a :Polyp:.
-  - It can become a :Polyp: any number of times in a :Run:.
-  - :StateSnapshot: adds `polyp` (boolean) and `polypFor` (seconds left, 0 when not a :Polyp:).
-  - While it is a :Polyp:, no :Predator: chases it: every :Predator: that swims towards the :Jellyfish: wanders instead, at its own speed, towards a point in the :Level: it picks from the :RunSeed:, picking a new one on reaching it or every 4 s, and swims towards the :Jellyfish: again once the :Polyp: turns back.
+# polyp
+A :Jellyfish: that loses its last heart is a :Polyp: for 3 s where it stands, then turns back into the :Jellyfish: there with its :Hearts: at 3 and its :Pulses: refilled to their start for the :Level:.
+- It turns back upright, its :Heading: 0, whatever its :Heading: was.
+- Its speed drops to 0 at once, and it does not move while a :Polyp:; direction keys, Space, E, Enter and Shift do nothing.
+- :Pulses: does not run down while it is a :Polyp:.
+- A :Jellyfish: whose :Pulses: reaches 0 becomes a :Polyp: in the same way; it turns back just as after losing its last heart, its :Hearts: at 3 and its :Pulses: refilled to their start for the :Level:.
+- :Hud: shows `Out of pulses - regenerating` in place of `Regenerating` for a :Polyp: that came from running out of :Pulses:.
+- A :Polyp: touching an open :Rift: enters it, as the :Jellyfish: does.
+- It has :Invulnerability: for the 3 s, in place of the 2 s that follow a hit, and does not blink.
+- The 3 s do not run while the :Run: is paused.
+- It is drawn as the polyp figure in place of the :Jellyfish: figure.
+- :Hud: shows `Regenerating` while it is a :Polyp:.
+- It can become a :Polyp: any number of times in a :Run:.
+- :StateSnapshot: adds `polyp` (boolean) and `polypFor` (seconds left, 0 when not a :Polyp:).
+- While it is a :Polyp:, no :Predator: chases it: every :Predator: that swims towards the :Jellyfish: wanders instead, at its own speed, towards a point in the :Level: it picks from the :RunSeed:, picking a new one on reaching it or every 4 s, and swims towards the :Jellyfish: again once the :Polyp: turns back.
+
+# predator-heights
+Each :Predator: lies at its own vertical height `z`, placed from the :RunSeed: between `80` and `220` px unless its kind says otherwise, keeps that height while it moves, and is drawn at it; it touches the :Jellyfish:, and is reached by the :Sting:, only in 3D.
+- A :Predator: touches the :Jellyfish: when `hypot(dx, dy, dz)` between their centres is at most 24 plus its radius; passing over or under it touches nothing.
+- The :Sting: reaches a :Predator: when `hypot(dx, dy, dz)` between the :Jellyfish: centre and the :Predator: centre is at most the sting's reach plus the :Predator: radius.
+- The same :RunSeed: gives each :Depth: the same :Predator: heights.
+- :StateSnapshot: adds `z` to each item of `predators`.

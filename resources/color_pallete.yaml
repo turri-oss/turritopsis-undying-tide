@@ -44,9 +44,9 @@ predators:
 scenery:                     # landscape, only drawn; muted so it never reads as a gameplay object
   sand: "#6E7F6A"           # seabed of the sunlit and twilight depths
   sand-deep: "#2B3A3E"      # seabed of the midnight and abyss depths
-  rock: "#3E5A63"
-  rock-dark: "#1A2C33"
-  rock-far: "#1F5566"       # distant arches, drawn at 40% opacity
+  rock: "#7D8487"         # grey stone
+  rock-dark: "#555C60"
+  rock-far: "#8C9396"       # rock arches, grey stone, drawn opaque
   coral: "#B5735E"
   coral-soft: "#8E7AA8"
   kelp: "#4F7A52"

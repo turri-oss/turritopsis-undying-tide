@@ -6,32 +6,35 @@ description: The ocean - the play area, the game loop, the jellyfish swimming, a
 
 ***functional specs***
 
-- :TitleScreen: shows the heading `Turritopsis Dohrnii: The Undying Tide` and a `Dive` button, which has the focus when the page opens.
-  - Activating `Dive` (Enter or Space on it) opens :DivePage:, which starts a new :Run:.
-  - :DivePage: draws the :Level: as water in the sunlit gradient of the palette, top to bottom, with the :Jellyfish: at its centre, `(640, 360)`.
-  - :DivePage: opened directly also starts a new :Run:.
+# title-screen-and-dive
+:TitleScreen: shows the heading `Turritopsis Dohrnii: The Undying Tide` and a `Dive` button, which has the focus when the page opens.
+- Activating `Dive` (Enter or Space on it) opens :DivePage:, which starts a new :Run:.
+- :DivePage: draws the :Level: in the 3D `THREE.Scene` in third-person perspective, with the :Jellyfish: at its centre `(640, 360)` at vertical height `z = 120` and `pitch = 0`, a `THREE.PointLight` `35` px above it that follows it, and a 60° third-person `THREE.PerspectiveCamera` trailing `140` px behind the :Jellyfish: opposite its :Heading: and `55` px above `z`, looking level `120` px ahead along its :Heading:, never tilting.
+- :DivePage: opened directly also starts a new :Run:.
 
-- The :Jellyfish: swims and steers relative to its :Heading:, with the direction keys: Arrow Up, Arrow Left and Arrow Right, or W, A and D.
-  - Arrow Up or W swims forward, along its :Heading:; it never swims backward, and Arrow Down and S do nothing: to go back it turns round.
-  - Arrow Left or A turns its :Heading: anticlockwise and Arrow Right or D clockwise, at 90° per second, whether it is moving or not.
-  - While Left or Right is held and Up is not, it drifts forward in gentle strokes as it turns, never turning on the spot: one every 0.8 s, the first the moment the turn starts, each thrusting for 0.3 s at 250 px/s² along its :Heading: as it stands, up to 70 px/s, and gliding between them as after any stroke.
-  - Its :Heading: is 0 at the start of a :Run:, and keeps its value while no turning key is held.
-  - It swims in strokes, one every 0.8 s while Up is held, the first the moment it is held after it was not.
-  - Each stroke thrusts for 0.3 s, accelerating it at 700 px/s² forward along its :Heading: as it stands at that moment, up to a top speed of 280 px/s; for the other 0.5 s it glides, slowing by 200 px/s².
-  - Turning does not turn its velocity: it keeps moving as it was, and the next thrust pushes along the new :Heading:.
-  - With Up not held it glides on, slowing down until it stops within 1 s.
-  - Holding Left and Right together counts as holding neither.
-  - Its centre stays at least 24 px inside each edge of the :Level:; at an edge, its speed into that edge drops to zero.
-  - A key held while the page does not have the focus is released when the page loses it.
+# jellyfish-swimming
+The arrow keys (or W, S, A and D) only steer the :Jellyfish: - they turn and tilt it and never move it - and it moves only while Space is held, swimming the way it points.
+- Arrow Left or A turns its :Heading: anticlockwise and Arrow Right or D clockwise, at 90° per second, also on the spot while it stands still: the camera turns around with it, staying behind it; holding Left and Right together counts as holding neither.
+- Arrow Up or W tilts its nose down and Arrow Down or S tilts it up: its `pitch` turns at `180`° per second (`3`° per tick) towards `-45`° while Up or W alone is held, towards `+45`° while Down or S alone is held, reaching either in a quarter second from level, and back towards `0`° while neither or both are held.
+- While Space is held it swims smoothly, with no strokes or bursts, along its :Heading: and `pitch`, speeding up at 700 px/s² to a speed of 280 px/s: `cos(pitch)` of its speed goes along its :Heading: in `vx` and `vy`, and `sin(pitch)` of it raises `z` as `vz`, so with Space alone it swims straight and level, with Space and Up it swims down at 45° and with Space and Down up at 45°; it never swims backward.
+- With Space not held it glides on the way it was going, its speed slowing by 200 px/s² until it stops; turning or tilting does not turn the way it is going, and the next push of Space goes the new way.
+- Its :Heading: is 0, its vertical height `z` is `120`, its `pitch` is `0` and it is at rest at the start of a :Run:.
+- Its horizontal centre stays at least 24 px inside each boundary of the :Level: (`x` in `24..1256`, `y` in `24..696`), and its vertical height `z` stays in `24..240` under all movement (swimming, gliding, a :Dash:, or a :Wave: push); at a boundary, or at its lowest height below, its speed into that boundary drops to zero.
+- Its bell and tentacles never reach the seabed, whose top is at most `20` px high: `z` is kept at or above its lowest height, which follows the target `20 + 28 + 70 × d`, where `s = hypot(vx, vy, vz)`, `f = min(1, s / 240)` and `d = (1 − f) + f × max(0, vz / s)` (`d = 1` at rest) - `118` at rest with its tentacles hanging straight down, `48` swimming level or diving at 240 px/s and faster.
+  - The lowest height falls towards a lower target at no more than `90` px/s, as the tentacles take time to stream back, and rises to a higher target at once.
+  - Below its lowest height - after slowing, stopping or turning to rise - the :Jellyfish: rises by itself at `120` px/s until it is at it, whatever the keys; meanwhile no movement lowers `z`.
+- A key held while the page does not have the focus is released when the page loses it.
 
-- A :Run: started with the URL parameter `seed=<integer>` - `/dive?seed=42`, or `/?seed=42` before `Dive` - uses that :RunSeed:; otherwise its :RunSeed: is chosen at random.
-  - While :DivePage: is open, `window.__undyingTide` is a getter returning a fresh :StateSnapshot: with `seed` (the :RunSeed:), `tick` (updates since the :Run: started), `paused` (boolean) and `jellyfish` (`x`, `y`, `vx`, `vy`, in px and px/s, and `heading`, its :Heading: in degrees).
-  - A `seed` that is not an integer is ignored.
-  - Two :Run: items with the same :RunSeed: and the same keys pressed on the same ticks have the same :StateSnapshot: at every tick.
+# run-seed-and-snapshot
+A :Run: started with the URL parameter `seed=<integer>` - `/dive?seed=42`, or `/?seed=42` before `Dive` - uses that :RunSeed:; otherwise its :RunSeed: is chosen at random.
+- While :DivePage: is open, `window.__undyingTide` is a getter returning a fresh :StateSnapshot: with `seed` (the :RunSeed:), `tick` (updates since the :Run: started), `paused` (boolean) and `jellyfish` (`x`, `y`, `z`, `vx`, `vy`, `vz`, in px and px/s, `heading`, its :Heading: in degrees, and `pitch`, its vertical pitch in degrees).
+- A `seed` that is not an integer is ignored.
+- Two :Run: items with the same :RunSeed: and the same keys pressed on the same ticks have the same :StateSnapshot: at every tick.
 
-- P or Escape pauses a :Run: and shows the :PauseMenu:; while paused, `tick` and every position stand still.
-  - :PauseMenu: shows the heading `Paused` and the buttons `Resume`, which has the focus, and `Surface`.
-  - `Resume`, P or Escape resumes the :Run: where it stood.
-  - `Surface` ends the :Run: without a score and opens :TitleScreen:.
-  - The :Run: pauses by itself when the page loses the focus or is hidden, and stays paused until resumed.
-  - Direction keys held when the :Run: pauses count as released when it resumes.
+# pause-menu
+P or Escape pauses a :Run: and shows the :PauseMenu:; while paused, `tick` and every position stand still.
+- :PauseMenu: shows the heading `Paused` and the buttons `Resume`, which has the focus, and `Surface`.
+- `Resume`, P or Escape resumes the :Run: where it stood.
+- `Surface` ends the :Run: without a score and opens :TitleScreen:.
+- The :Run: pauses by itself when the page loses the focus or is hidden, and stays paused until resumed.
+- Direction keys held when the :Run: pauses count as released when it resumes.

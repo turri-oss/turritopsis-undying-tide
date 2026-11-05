@@ -10,53 +10,68 @@ description: Depths - gene fragments, the Rift, ever deeper levels, the darkness
 
 - :Implementation: draws every :Wave: of a :Level: from a generator of `src/game/sim/random.ts` seeded from the :RunSeed: and the :Depth:, apart from the one the :Level: layouts are drawn from, so waves change no other draw of the :Run:.
 
+- :Implementation: builds each :GeneFragment: in the Three.js scene as a multifaceted 3D crystal mesh (`THREE.OctahedronGeometry` or `THREE.IcosahedronGeometry`) in the palette's gene-fragment colour, each :PlanktonCloud: as a 3D cluster of glowing sphere meshes in the plankton colour, and a closed or open :Rift: as a 3D torus vortex mesh (`THREE.TorusGeometry`) in the closed-rift or open-rift colour, each sized to its circle - never as a plain flat disc.
+
 ***functional specs***
 
-- Each :Level: holds `4 + :Depth:` :GeneFragment: items, placed from the :RunSeed:, which the :Jellyfish: collects by touching them.
-  - Each :GeneFragment: lies at least 40 px inside every edge, at least 120 px from the :Jellyfish: start `(640, 360)`, and at least 80 px from every other :GeneFragment:.
-  - A :GeneFragment: is collected when its circle overlaps the :Jellyfish: circle, and then disappears.
-  - :Hud: shows `Depth <n>` and `Fragments <collected>/<total>`.
-  - :StateSnapshot: adds `depth`, and `fragments`, the list of the :Level:'s :GeneFragment: items, each with `x`, `y` and `collected`.
-  - The same :RunSeed: places the :GeneFragment: items of each :Depth: at the same positions.
+# gene-fragments
+Each :Level: holds `4 + :Depth:` :GeneFragment: items, placed from the :RunSeed:, which the :Jellyfish: collects by touching them.
+- Each :GeneFragment: lies at least 40 px inside every edge, at least 120 px from the :Jellyfish: start `(640, 360)`, and at least 80 px from every other :GeneFragment:.
+- A :GeneFragment: is collected when its circle overlaps the :Jellyfish: circle, and then disappears.
+- :Hud: shows `Depth <n>` and `Fragments <collected>/<total>`.
+- :StateSnapshot: adds `depth`, and `fragments`, the list of the :Level:'s :GeneFragment: items, each with `x`, `y` and `collected`.
+- The same :RunSeed: places the :GeneFragment: items of each :Depth: at the same positions.
 
-- Each :Level: has one :Rift:, which opens once every :GeneFragment: of the :Level: is collected; swimming into an open :Rift: takes the :Run: to the next :Depth:.
-  - The :Rift: lies, from the :RunSeed:, at least 60 px inside every edge, at least 200 px from `(640, 360)`, and at least 60 px from every :GeneFragment:.
-  - A closed :Rift: is drawn in the palette's closed-rift colour and does nothing when touched; an open one glows in the open-rift colour.
-  - The :Jellyfish: enters an open :Rift: when its circle overlaps the :Rift: circle.
-  - The next :Level: starts with its :Depth: one higher, a new layout from the :RunSeed:, and the :Jellyfish: at rest at `(640, 360)`, upright, its :Heading: 0.
-  - :Hud: shows `Rift open` while the :Rift: is open.
-  - :StateSnapshot: adds `rift`, with `x`, `y` and `open`.
+# rift-descent
+Each :Level: has one :Rift:, which opens once every :GeneFragment: of the :Level: is collected; swimming into an open :Rift: takes the :Run: to the next :Depth:.
+- The :Rift: lies, from the :RunSeed:, at least 60 px inside every edge, at least 200 px from `(640, 360)`, and at least 60 px from every :GeneFragment:.
+- A closed :Rift: is drawn in the palette's closed-rift colour and does nothing when touched; an open one glows in the open-rift colour.
+- The :Jellyfish: enters an open :Rift: when its circle overlaps the :Rift: circle.
+- The next :Level: starts with its :Depth: one higher, a new layout from the :RunSeed:, and the :Jellyfish: at rest at `(640, 360)` with vertical height `z = 120`, `pitch = 0`, upright, its :Heading: 0.
+- :Hud: shows `Rift open` while the :Rift: is open.
+- :StateSnapshot: adds `rift`, with `x`, `y` and `open`.
 
-- Each :Level: starts its :Pulses: at `max(20, 65 - 5 × :Depth:)` - 60 at :Depth: 1 - and runs them down by 1 a second while a direction key is held and by 0.5 a second otherwise.
-  - Opposite direction keys held together count as no direction held.
-  - :Pulses: never runs down while the :Run: is paused.
-  - When :Pulses: reaches 0, it stays at 0 until it is refilled.
-  - :Hud: shows `Pulses <n>`, :Pulses: rounded up, beside a bar of :Pulses: against its start for the :Level:, in the palette's pulse-bar colour, and in its danger colour at 10 or fewer.
-  - :StateSnapshot: adds `pulses` (unrounded), `pulsesStart`, `ended` (boolean) and `endReason` (`null` until the :RunEnd:).
-  - P and Escape do nothing after the :RunEnd:.
+# pulse-drain
+Each :Level: starts its :Pulses: at `max(20, 65 - 5 × :Depth:)` - 60 at :Depth: 1 - and runs them down by 1 a second while Space or a direction key (Arrow Up, Arrow Down, Arrow Left, Arrow Right, W, S, A or D) is held and by 0.5 a second otherwise.
+- Opposite direction keys held together (Left with Right, or Up with Down) count as neither of that pair held.
+- :Pulses: never runs down while the :Run: is paused.
+- When :Pulses: reaches 0, it stays at 0 until it is refilled.
+- :Hud: shows `Pulses <n>`, :Pulses: rounded up, beside a bar of :Pulses: against its start for the :Level:, in the palette's pulse-bar colour, and in its danger colour at 10 or fewer.
+- :StateSnapshot: adds `pulses` (unrounded), `pulsesStart`, `ended` (boolean) and `endReason` (`null` until the :RunEnd:).
+- P and Escape do nothing after the :RunEnd:.
 
-- Each :Level: holds 3 :PlanktonCloud: items, placed from the :RunSeed:; touching one adds 15 to :Pulses:, up to its start for the :Level:, and uses the :PlanktonCloud: up.
-  - Each :PlanktonCloud: lies at least 40 px inside every edge, at least 100 px from `(640, 360)`, and at least 60 px from the :Rift:, every :GeneFragment: and every other :PlanktonCloud:.
-  - A :PlanktonCloud: is touched when its circle overlaps the :Jellyfish: circle.
-  - A used-up :PlanktonCloud: disappears, and is used up even when :Pulses: is already at its start.
-  - :StateSnapshot: adds `plankton`, the list of :PlanktonCloud: items, each with `x`, `y` and `used`.
+# plankton-clouds
+Each :Level: holds 3 :PlanktonCloud: items, placed from the :RunSeed:; touching one adds 15 to :Pulses:, up to its start for the :Level:, and uses the :PlanktonCloud: up.
+- Each :PlanktonCloud: lies at least 40 px inside every edge, at least 100 px from `(640, 360)`, and at least 60 px from the :Rift:, every :GeneFragment: and every other :PlanktonCloud:.
+- A :PlanktonCloud: is touched when its circle overlaps the :Jellyfish: circle.
+- A used-up :PlanktonCloud: disappears, and is used up even when :Pulses: is already at its start.
+- :StateSnapshot: adds `plankton`, the list of :PlanktonCloud: items, each with `x`, `y` and `used`.
 
-- Each :Level: is drawn darker the deeper it is: its water takes the palette gradient of its :Depth: band, and only what lies within the :Glow: is seen.
-  - The :Glow: radius is `max(160, 1469 × 0.88^(:Depth: - 1))` px - 1469 px, the whole screen, at :Depth: 1.
-  - Outside the :Glow:, the :Level: is covered by the palette's darkness overlay, fully opaque from 40 px beyond its edge and fading in over those 40 px.
-  - An open :Rift: stays visible through the darkness.
-  - :Hud: is drawn above the darkness.
-  - :StateSnapshot: adds `glowRadius`.
+# item-heights
+Each :GeneFragment:, :PlanktonCloud: and :Rift: lies at its own vertical height `z`, placed from the :RunSeed: between `90` and `220` px, and is drawn at that height; the :Jellyfish: touches one only when their spheres overlap in 3D, so it has to swim up or down to its height.
+- Their spheres overlap when `hypot(dx, dy, dz)` between their centres is at most the sum of their radii: 24 for the :Jellyfish:, 12 for a :GeneFragment:, 30 for a :PlanktonCloud:, 40 for the :Rift:.
+- This holds for collecting a :GeneFragment:, touching a :PlanktonCloud: and entering an open :Rift:; passing over or under one touches nothing.
+- The same :RunSeed: gives each :Depth: the same heights.
+- :StateSnapshot: adds `z` to each item of `fragments` and `plankton`, and to `rift`.
 
-- From :Depth: 2, :Wave: items rise in each :Level:, one at a time; each warns for 1 s, pushing nothing, then pushes for 6 s the :Jellyfish: along its direction at its strength while their circles overlap.
-  - The first :Wave: of a :Level: rises 4 to 8 s after the :Level: starts, and each next one 6 to 12 s after the one before it ends.
-  - Each :Wave: draws its wait, centre, radius, direction and strength from the :RunSeed:: its centre anywhere in the :Level:, its radius 150 to 350 px, its direction 0 to 360°, its strength 80 to 200 px/s.
-  - These ranges are the same at every :Depth: from 2 on.
-  - Its push rises from 0 to its strength over the first 0.5 s of the 6 s and falls back to 0 over the last 0.5 s.
-  - The push moves the :Jellyfish: on top of its own swimming and leaves its `vx`, `vy` and :Heading: unchanged; its centre still stays at least 24 px inside each edge.
-  - Gene fragments, plankton clouds and the :Rift: are never moved.
-  - A :Wave: takes no :Hearts: and no :Pulses:.
-  - A :Wave: and its timers stand still while the :Run: is paused and after the :RunEnd:; a :Wave: still running when the :Level: ends is gone in the next :Level:.
-  - At :Depth: 1 no :Wave: rises.
-  - The same :RunSeed: gives each :Depth: the same :Wave: items at the same ticks.
-  - :StateSnapshot: adds `wave`, `null` while none is up, else with `x`, `y`, `radius`, `direction`, `strength`, `phase` (`warning` or `pushing`) and `timeLeft` (seconds left in that phase).
+# depth-darkness
+Each :Level: is drawn darker the deeper it is: its water takes the palette gradient of its :Depth: band, and only what lies within the :Glow: is seen.
+- The :Glow: radius is `max(160, 1469 × 0.88^(:Depth: - 1))` px - 1469 px, the whole screen, at :Depth: 1.
+- Towards the edge of the :Glow:, the :Level: fades into the water colour of its :Depth: band, fully faded at the :Glow: radius from the camera; no black band, disc or overlay is drawn anywhere.
+- An open :Rift: stays visible beyond the :Glow:; a closed :Rift: beyond it fades like the rest of the :Level:.
+- :Hud: is drawn above the water.
+- :StateSnapshot: adds `glowRadius`.
+
+# depth-waves
+From :Depth: 2, :Wave: items rise in each :Level:, one at a time; each warns for 1 s, pushing nothing, then pushes for 6 s the :Jellyfish: along its direction at its strength while their circles overlap.
+- The first :Wave: of a :Level: rises 4 to 8 s after the :Level: starts, and each next one 6 to 12 s after the one before it ends.
+- Each :Wave: draws its wait, centre, radius, direction and strength from the :RunSeed:: its centre anywhere in the :Level:, its radius 150 to 350 px, its direction 0 to 360°, its strength 80 to 200 px/s.
+- These ranges are the same at every :Depth: from 2 on.
+- Its push rises from 0 to its strength over the first 0.5 s of the 6 s and falls back to 0 over the last 0.5 s.
+- The push moves the :Jellyfish: on top of its own swimming and leaves its `vx`, `vy` and :Heading: unchanged; its centre still stays at least 24 px inside each edge.
+- Gene fragments, plankton clouds and the :Rift: are never moved.
+- A :Wave: takes no :Hearts: and no :Pulses:.
+- A :Wave: and its timers stand still while the :Run: is paused and after the :RunEnd:; a :Wave: still running when the :Level: ends is gone in the next :Level:.
+- At :Depth: 1 no :Wave: rises.
+- The same :RunSeed: gives each :Depth: the same :Wave: items at the same ticks.
+- :StateSnapshot: adds `wave`, `null` while none is up, else with `x`, `y`, `radius`, `direction`, `strength`, `phase` (`warning` or `pushing`) and `timeLeft` (seconds left in that phase).

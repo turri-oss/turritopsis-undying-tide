@@ -6,12 +6,12 @@ description: The concepts every Undying Tide module shares - the run, the level,
 
 - :TitleScreen: is the page at `/`, the first thing a player sees.
 
-- :Level: is one depth of the ocean, the whole 1280×720 play area, seen at once on one screen.
-  - Its position is in logical pixels, `(0, 0)` at the top left.
+- :Level: is one depth of the ocean, a walled 1280×720 3D underwater cavern (`x` from 0 to 1280 west to east, `y` from 0 to 720 north to south, and vertical height `z` from 0 at the seabed floor to 260 at the water ceiling).
+  - Its horizontal position is in logical pixels, `(0, 0)` at the north-west corner.
 
-- :Jellyfish: is the player's Turritopsis, a circle of radius 24 in the :Level: for collisions, drawn as its own figure.
+- :Jellyfish: is the player's Turritopsis, a sphere/circle of radius 24 in the :Level: for collisions, swimming in 3D at horizontal `(x, y)` and vertical height `z` (`24` to `240` px above the seabed floor, starting at `120`) with vertical `pitch` (`-25°` to `25°`), drawn as its own 3D figure.
 
-- :Heading: is the direction the top of the :Jellyfish: bell faces, in degrees from 0 up to but not including 360: 0 is straight up the :Level:, 90 to the right, increasing clockwise.
+- :Heading: is the horizontal direction the :Jellyfish: faces in the :Level:, in degrees from 0 up to but not including 360: 0 is north (`-y`), 90 east (`+x`), 180 south (`+y`), 270 west (`-x`), increasing clockwise.
 
 - :Run: is one game, from the dive until it ends.
 

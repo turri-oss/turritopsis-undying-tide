@@ -12,23 +12,27 @@ description: Turritopsis Dohrnii - The Undying Tide, a keyboard-only browser gam
 
 - :Implementation: supports the current desktop versions of Chrome, Firefox, Safari and Edge.
 
-- :Implementation: draws the game world on one HTML5 Canvas 2D element, with no game or rendering library.
-  - The play area is 1280×720 logical pixels, scaled to fit the window with its aspect ratio kept, letterboxed, and sharp on high-density screens.
+- :Implementation: renders the 3D game world with Three.js (`three` and `@types/three`) in third-person 3D perspective: the 1280×720 :Level: lies on the horizontal `XZ` plane of a `THREE.Scene` (`scene.x = x` from 0 to 1280, `scene.z = y` from 0 to 720, and vertical height `scene.y = z` from 0 at the seabed floor to 260 at the water ceiling, with `toScene(x, y, z)` returning `{ x, y: z ?? 120, z: y }`), with :Hud: and the control legend drawn on a 2D overlay canvas above the WebGL canvas.
+  - The `THREE.PerspectiveCamera` uses a 60° vertical field of view in third-person follow mode, moving with the :Jellyfish: as one: positioned `140` px behind it opposite its :Heading: and `55` px above its vertical height `z` (`camera.position` at `(x - 140 × sin(:Heading:), z + 55, y + 140 × cos(:Heading:))`), looking at a target `120` px ahead of it along its :Heading: at its own height (`(x + 120 × sin(:Heading:), z, y - 120 × cos(:Heading:))`); the camera never tilts with `pitch`, so diving or rising moves the camera and the :Jellyfish: up and down together and the view keeps its angle.
+  - The `THREE.Scene` has a `THREE.AmbientLight`, a key `THREE.DirectionalLight` from above, a rim `THREE.DirectionalLight`, and a `THREE.PointLight` in the palette's player core colour that moves with the :Jellyfish: (`35` px above it) to cast 3D highlights on nearby figures and scenery; `scene.ts` creates no `water` backdrop plane mesh (`userData.kind = "water"`) and no darkness mesh of any shape - no `darkness` disc, no `darknessShell` cylinder - so no black band, disc or wall is ever drawn.
+  - The :Glow: is drawn as underwater linear fog (`THREE.Fog`) in the depth band's bottom water colour, with `scene.background` that same colour: fog `near` at 60% of the :Glow: radius and `far` at the :Glow: radius, measured from the camera, updated whenever the :Glow: radius changes; an open :Rift: figure's materials have `fog = false`.
+  - The Three.js WebGL canvas fills the entire browser window (`win.innerWidth × win.innerHeight` with `camera.aspect = win.innerWidth / win.innerHeight` updated on resize) with no black letterbox or pillarbox bands around the environment, while the 1280×720 2D HUD overlay canvas is scaled and centred over it and sharp on high-density screens.
+  - When a WebGL context is unavailable, `src/game/render/` still builds and updates the `THREE.Scene` and draws the 2D overlay canvas without throwing.
 
-- :Implementation: runs the game on a fixed timestep of 60 updates per second, driven by `requestAnimationFrame` with an accumulator, catching up at most 5 updates per frame, and draws once per frame.
+- :Implementation: runs the game on a fixed timestep of 60 updates per second, driven by `requestAnimationFrame` with an accumulator, catching up at most 5 updates per frame, and renders once per frame.
 
 - :Implementation: keeps the game in `src/game/`, apart from the React code:
-  - `src/game/sim/` holds the simulation - world state, levels, the player, predators, collisions, scoring - as plain TypeScript with no DOM, canvas or React access.
-  - `src/game/render/` draws a simulation state on a canvas, and changes no state.
+  - `src/game/sim/` holds the simulation - world state, levels, the player, predators, collisions, scoring - as plain TypeScript with no DOM, canvas, Three.js or React access.
+  - `src/game/render/` updates the `THREE.Scene` and draws the 2D HUD overlay canvas from a simulation state, and changes no simulation state.
   - `src/game/input/` maps keyboard events, by `KeyboardEvent.code`, to game actions.
   - `src/game/loop.ts` runs the fixed-timestep loop, feeding actions to the simulation and states to the renderer.
-  - React pages host the canvas and show every screen around it; the in-game HUD is drawn on the canvas.
+  - React pages host the Three.js WebGL canvas and the 2D HUD overlay canvas and show every screen around them; the in-game :Hud: is drawn on the 2D overlay canvas.
 
 - :Implementation: makes the simulation deterministic: every random choice comes from one seeded pseudo-random generator in `src/game/sim/random.ts`, so a seed and a sequence of actions always give the same states.
 
-- :Implementation: draws every figure - the player, each predator kind, gene fragments, plankton, the Rift - from its own SVG file in `src/game/art/`, imported through Vite, loaded once into an image before a run starts.
+- :Implementation: loads the glTF `.glb` 3D models in `public/models/` once through Three.js `GLTFLoader` in `src/game/render/glb-loader.ts` from `${import.meta.env.BASE_URL}models/<name>.glb`, caches them, and attaches a normalized, palette-tinted clone (`SkeletonUtils.clone` for rigged models) into each scene instance's `THREE.Group`, keeping a synchronous 3D lit fallback mesh (`THREE.MeshStandardMaterial`) with the same `userData` tag until the `.glb` finishes loading and hiding every fallback mesh in the group once `installModel` attaches the loaded `.glb` clone; :Jellyfish:, comb jellies, :GeneFragment:, :PlanktonCloud: and :Rift: are built as lit procedural 3D Three.js meshes (`THREE.Group` and `THREE.Mesh` with `THREE.MeshStandardMaterial` or `THREE.MeshPhysicalMaterial`).
 
-- :Implementation: takes every colour from the palette in [resources/color_pallete.yaml](resources/color_pallete.yaml), transcribed into `src/game/palette.ts`, which is the only place colours are written in code, SVG files included.
+- :Implementation: takes every colour from the palette in [resources/color_pallete.yaml](resources/color_pallete.yaml), transcribed into `src/game/palette.ts`, which is the only place colours are written in code, Three.js materials, lights, fog and SVG files included.
 
 - :Implementation: is operable by keyboard alone on every screen, with a visible focus on the element in focus.
 
@@ -37,7 +41,9 @@ description: Turritopsis Dohrnii - The Undying Tide, a keyboard-only browser gam
 
 - :UnitTests: test the simulation headless, by stepping it with a fixed seed and a sequence of actions and asserting on its state.
 
-- :UnitTests: test the renderer against a stand-in 2D context that records its calls, never against pixels.
+- :UnitTests: test the renderer by inspecting the `THREE.Scene` object graph (groups, meshes, transforms, materials, visibilities and `userData`) and a stand-in 2D overlay context that records its calls, never against pixels or a live WebGL context.
+  - :UnitTests: of `src/game/render/scene.ts` assert the 60° third-person `THREE.PerspectiveCamera` trails `140` px behind the :Jellyfish: opposite its :Heading: and `55` px above its vertical height `z` (`camera.position` rising and diving with `z`, and `camera.rotation.x` the same at every `z` and `pitch`), that `toScene(x, y, z)` maps horizontal `(x, y)` and vertical height `z` to `{ x, y: z ?? 120, z: y }`, that the :Jellyfish: group tilts forward into its movement (`jellyfish.rotation.x` negative when swimming forward, `-90°` at top speed swimming level, the bell's top pointing the way it swims, so the bell leans forward away from the camera and the tentacles trail behind closer to the camera), that a `THREE.PointLight` moves with the :Jellyfish:, that `buildScenery` is mounted and updated in the level scene, and that the scene contains no `cavern-wall`, `water`, `darkness` or `darknessShell` meshes and has a `THREE.Fog` whose `far` is the :Glow: radius.
+  - :UnitTests: of `src/game/render/glb-loader.ts` assert that `attachGlbModel` loads `.glb` models from `${import.meta.env.BASE_URL}models/<name>.glb` through Three.js `GLTFLoader`, sets `userData.glbModel` to `<name>.glb` on the target `THREE.Group`, hides all fallback meshes when `installModel` runs, and clones and palette-tints loaded scenes.
 
 ***test reqs***
 

@@ -96,7 +96,7 @@ run_check() {
     echo "$name: passed"
   fi
 }
-run_check "format" prettier --list-different --ignore-unknown .
+run_check "format" prettier --list-different --ignore-unknown . '!.turri-notes.md'
 run_check "lint" eslint --max-warnings 0 .
 if [ -x "$BIN/vue-tsc" ]; then
   run_check "typecheck" vue-tsc --noEmit --pretty false

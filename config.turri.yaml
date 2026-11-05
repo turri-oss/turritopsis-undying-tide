@@ -26,7 +26,7 @@ release-after-pulse: false
 testing-scripts-run-on: in-place
 
 # Seconds each agent turn has, for every role without its own; 0 for none.
-turn-limit: 120
+turn-limit: 300
 
 # How many pulses run at once, on modules that share nothing - half this machine's cores, one to four.
 parallel-jobs: 4
@@ -61,6 +61,7 @@ conformance-tests-script: test_scripts/run_conformance_tests_typescript.sh
 
 # Optional: the .plain file turri regenerate builds when none is named.
 module: scenery.plain
+base-folder: assets
 
 # Optional, under conformance-tests: chosen or module: how many functional specs of a module may be chosen - a count or a share.
 # Without it, any number.
@@ -87,3 +88,4 @@ module: scenery.plain
 #   judge: { model: amazon-bedrock/eu.anthropic.claude-opus-5-5, thinking: medium } # judges a failing conformance run - as judge-model, which it wins over
 #   arbiter: { model: amazon-bedrock/eu.anthropic.claude-opus-5-5, thinking: medium } # weighs a second review
 #   debugger: { model: amazon-bedrock/eu.anthropic.claude-opus-5-5, thinking: medium } # a fresh look at unit tests that keep failing the same way
+sentinel: true
